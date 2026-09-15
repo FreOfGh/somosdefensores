@@ -18,3 +18,7 @@ No defina `DB_PASSWORD` con un valor escrito en el repositorio. Use la referenci
 El contenedor solo publica Nginx en el puerto `PORT` asignado por Railway. PHP-FPM usa un socket Unix interno y no queda expuesto en red. Nginx permite cargas de hasta 100 MB.
 
 Tras la primera migracion, cambie `RUN_MIGRATIONS` a `false` para que las migraciones se ejecuten desde un proceso de despliegue controlado.
+
+## Migraciones y seeding automaticos
+
+El archivo `railway.json` define un `deploy.preDeployCommand` que ejecuta `php artisan migrate --force && php artisan db:seed --force` antes de cada despliegue. Railway ejecuta este comando en una instancia efimera con acceso a la base de datos en tiempo de ejecucion, una vez que las variables `DB_*`/`PG*` y `APP_KEY` ya estan disponibles, evitando la necesidad de ejecutar migraciones durante el build de la imagen (cuando la base de datos aun no es accesible).
