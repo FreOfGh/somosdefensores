@@ -8,6 +8,7 @@ import {
   formularioProteccionColectivaInicial,
 } from "@/types/formularios/proteccion-colectiva.types";
 import { enviarProteccionColectiva } from "@/services/formularios/proteccion-colectiva.service";
+import Stepper from "@/app/components/formularios/shared/stepper";
 import PasoInformacionGeneral from "./paso1";
 import PasoSeguridadYProteccion from "./paso2";
 
@@ -128,49 +129,13 @@ export default function FormularioProteccionColectivaPage() {
           </p>
         </div>
 
-        <div className="mb-8 rounded-xl border border-gray-200 bg-[#fefbfb] p-5 shadow-sm">
-          <div className="flex items-center">
-            <div className="flex flex-1 items-center">
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${
-                  paso >= 1 ? "bg-[#8e2329] text-white" : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                1
-              </div>
-
-              <div
-                className={`ml-3 text-sm font-semibold ${
-                  paso >= 1 ? "text-[#8e2329]" : "text-gray-400"
-                }`}
-              >
-                Información general
-              </div>
-            </div>
-
-            <div
-              className={`h-1 flex-1 rounded ${paso >= 2 ? "bg-[#8e2329]" : "bg-gray-200"}`}
-            />
-
-            <div className="flex flex-1 items-center justify-end">
-              <div
-                className={`mr-3 text-right text-sm font-semibold ${
-                  paso >= 2 ? "text-[#8e2329]" : "text-gray-400"
-                }`}
-              >
-                Seguridad y protección
-              </div>
-
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${
-                  paso >= 2 ? "bg-[#8e2329] text-white" : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                2
-              </div>
-            </div>
-          </div>
-        </div>
+        <Stepper
+          pasoActual={paso}
+          pasos={[
+            { numero: 1, etiqueta: "Información general" },
+            { numero: 2, etiqueta: "Seguridad y protección" },
+          ]}
+        />
 
         <AnimatePresence>
         {mensaje && (
@@ -191,24 +156,34 @@ export default function FormularioProteccionColectivaPage() {
         </AnimatePresence>
 
         <form onSubmit={enviarFormulario}>
-          {paso === 1 && (
-            <PasoInformacionGeneral
-              formulario={formulario}
-              errores={errores}
-              onCampoChange={actualizarCampo}
-              onSiguiente={siguientePaso}
-            />
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={paso}
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -24 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+            >
+              {paso === 1 && (
+                <PasoInformacionGeneral
+                  formulario={formulario}
+                  errores={errores}
+                  onCampoChange={actualizarCampo}
+                  onSiguiente={siguientePaso}
+                />
+              )}
 
-          {paso === 2 && (
-            <PasoSeguridadYProteccion
-              formulario={formulario}
-              errores={errores}
-              onCampoChange={actualizarCampo}
-              onVolver={pasoAnterior}
-              enviando={enviando}
-            />
-          )}
+              {paso === 2 && (
+                <PasoSeguridadYProteccion
+                  formulario={formulario}
+                  errores={errores}
+                  onCampoChange={actualizarCampo}
+                  onVolver={pasoAnterior}
+                  enviando={enviando}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </form>
 
         <div className="mt-8 rounded-xl border border-gray-200 bg-white p-5 text-sm text-gray-600">

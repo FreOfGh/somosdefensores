@@ -279,6 +279,76 @@ class ValidacionCasoController extends Controller
             ->where('tipo_caso', $tipoCaso)->where('caso_id', $casoId)->latest()->get());
     }
 
+    private const ETIQUETAS_PDF = [
+        'nombre_victima' => 'Nombres', 'apellido_victima' => 'Apellidos', 'tipo_documento' => 'Tipo de documento',
+        'numero_identificacion' => 'Número de identificación', 'edad' => 'Edad', 'genero' => 'Género',
+        'correo_victima' => 'Correo electrónico', 'numero_whatsapp' => 'Teléfono / celular', 'estado' => 'Estado',
+        'grupo_etnico' => 'Grupo étnico y/o poblacional', 'tiene_discapacidad' => 'Condición de discapacidad',
+        'cual_discapacidad' => '¿Cuál discapacidad?', 'tiene_condicion_salud' => 'Condición especial en salud',
+        'cual_condicion_salud' => '¿Cuál condición de salud?', 'estado_civil' => 'Estado civil',
+        'otra_composicion_familiar' => 'Otro estado civil', 'tiene_hijos' => '¿Tiene hijos/as?',
+        'numero_hijos' => 'Número de hijos/as', 'edades_hijos' => 'Edades de los hijos/as',
+        'personas_conviven' => 'Personas que viven con el solicitante', 'total_grupo_familiar' => 'Total grupo familiar',
+        'nombre_organizacion' => 'Organización a la cual pertenece', 'tipo_liderazgo' => 'Tipo de liderazgo o derechos que defiende',
+        'tipo_liderazgo_otro' => '¿Cuál? (otro tipo de liderazgo)', 'organizacion_remite' => 'Organización que remite el caso',
+        'persona_organizacion_nombre' => 'Persona que remite (nombre)', 'persona_organizacion_correo' => 'Persona que remite (correo)',
+        'persona_organizacion_celular' => 'Persona que remite (celular)', 'tipo_pasantia' => 'Tipo de pasantía',
+        'agresiones' => 'Agresiones reportadas', 'fecha_remision' => 'Fecha de remisión',
+        'seguimiento' => 'Seguimiento', 'pago_unico' => 'Pago único', 'primer_pago' => 'Primer pago',
+        'segundo_pago' => 'Segundo pago', 'tercer_pago' => 'Tercer pago',
+        'procedencia_departamento' => 'Procedencia: departamento', 'procedencia_municipio' => 'Procedencia: municipio',
+        'procedencia_vereda_comunidad' => 'Procedencia: vereda/comunidad', 'procedencia_resguardo' => 'Procedencia: consejo comunitario',
+        'residencia_departamento' => 'Residencia: departamento', 'residencia_municipio' => 'Residencia: municipio',
+        'residencia_vereda_comunidad' => 'Residencia: vereda/comunidad', 'residencia_resguardo' => 'Residencia: consejo comunitario',
+        'tiene_personeria_juridica' => '¿Tiene personería jurídica?', 'rut' => 'RUT', 'representante_legal' => 'Representante legal',
+        'representante_nombre' => 'Nombre del representante', 'representante_apellido' => 'Apellido del representante',
+        'cedula' => 'Número de identificación', 'telefono' => 'Teléfono', 'correo' => 'Correo electrónico',
+        'correo_electronico' => 'Correo', 'departamento' => 'Departamento', 'municipio' => 'Municipio', 'vereda' => 'Vereda / barrio',
+        'departamento_municipio_vereda' => 'Ubicación', 'descripcion_organizacion' => 'Descripción de la organización',
+        'trabajos_realiza' => 'Trabajos que realiza', 'riesgos_seguridad' => 'Riesgos de seguridad',
+        'medidas_proteccion' => 'Medidas de protección solicitadas', 'justificacion_medidas' => 'Justificación de las medidas',
+        'informacion_adicional' => 'Información adicional',
+    ];
+
+    private const SECCIONES_PDF = [
+        ['titulo' => 'Información personal', 'campos' => ['nombre_victima', 'apellido_victima', 'tipo_documento', 'numero_identificacion', 'edad', 'genero', 'numero_whatsapp', 'correo_victima', 'grupo_etnico']],
+        ['titulo' => 'Salud', 'campos' => ['tiene_discapacidad', 'cual_discapacidad', 'tiene_condicion_salud', 'cual_condicion_salud']],
+        ['titulo' => 'Composición del grupo familiar', 'campos' => ['estado_civil', 'otra_composicion_familiar', 'tiene_hijos', 'numero_hijos', 'edades_hijos', 'personas_conviven', 'total_grupo_familiar']],
+        ['titulo' => 'Lugar de procedencia', 'campos' => ['procedencia_departamento', 'procedencia_municipio', 'procedencia_vereda_comunidad', 'procedencia_resguardo']],
+        ['titulo' => 'Lugar de residencia', 'campos' => ['residencia_departamento', 'residencia_municipio', 'residencia_vereda_comunidad', 'residencia_resguardo']],
+        ['titulo' => 'Organización y remisión', 'campos' => ['nombre_organizacion', 'tipo_liderazgo', 'tipo_liderazgo_otro', 'organizacion_remite', 'persona_organizacion_nombre', 'persona_organizacion_correo', 'persona_organizacion_celular', 'tipo_pasantia']],
+        ['titulo' => 'Agresiones reportadas', 'campos' => ['agresiones']],
+        ['titulo' => 'Seguimiento administrativo', 'campos' => ['fecha_remision', 'seguimiento', 'pago_unico', 'primer_pago', 'segundo_pago', 'tercer_pago']],
+        ['titulo' => 'Datos de la organización', 'campos' => ['tiene_personeria_juridica', 'rut', 'representante_legal', 'representante_nombre', 'representante_apellido', 'cedula', 'telefono', 'correo', 'correo_electronico']],
+        ['titulo' => 'Ubicación de la organización', 'campos' => ['departamento_municipio_vereda', 'departamento', 'municipio', 'vereda']],
+        ['titulo' => 'Descripción y riesgos', 'campos' => ['descripcion_organizacion', 'trabajos_realiza', 'riesgos_seguridad']],
+        ['titulo' => 'Medidas de protección', 'campos' => ['medidas_proteccion', 'justificacion_medidas', 'informacion_adicional']],
+        ['titulo' => 'Estado del caso', 'campos' => ['estado']],
+    ];
+
+    private function formatearValorPdf(string $campo, mixed $valor): string
+    {
+        if ($valor === null || $valor === '') return '';
+        if ($campo === 'agresiones' && is_array($valor)) {
+            return collect($valor)->map(fn ($agresion, $indice) => sprintf(
+                "Agresión %d\nFecha: %s | Lugar: %s\nModalidad: %s\nDescripción: %s\nMotivos: %s\nPresunto responsable: %s",
+                $indice + 1,
+                $agresion['fecha_ocurrencia'] ?? 'Sin registrar',
+                collect([$agresion['departamento'] ?? null, $agresion['municipio'] ?? null, $agresion['vereda_comunidad'] ?? null])->filter()->implode(', ') ?: 'Sin registrar',
+                $agresion['modalidad'] ?? 'Sin registrar',
+                $agresion['descripcion'] ?? 'Sin registrar',
+                $agresion['motivos'] ?? 'Sin registrar',
+                $agresion['presunto_responsable'] ?? 'Sin registrar',
+            ))->implode("\n\n");
+        }
+        if ($campo === 'personas_conviven' && is_array($valor)) {
+            return collect($valor)->pluck('parentesco')->filter()->implode(', ');
+        }
+        if (is_bool($valor)) return $valor ? 'Sí' : 'No';
+        if (is_array($valor)) return json_encode($valor, JSON_UNESCAPED_UNICODE);
+        return (string) $valor;
+    }
+
     public function exportarPdf(Request $request, string $tipoCaso, string $casoId)
     {
         $caso = $this->buscarCaso($tipoCaso, $casoId);
@@ -289,19 +359,26 @@ class ValidacionCasoController extends Controller
         $ocultos = ['id', 'token', 'documentos_adjuntos', 'created_at', 'updated_at', 'deleted_at', 'concepto_equipo_proteccion'];
         $atributos = collect($caso->getAttributes())->except($ocultos)->all();
 
-        $secciones = [
-            ['titulo' => 'Información del caso', 'campos' => $atributos],
-        ];
+        $seccionesPdf = collect(self::SECCIONES_PDF)
+            ->map(fn ($seccion) => [
+                'titulo' => $seccion['titulo'],
+                'campos' => collect($seccion['campos'])
+                    ->filter(fn ($campo) => array_key_exists($campo, $atributos))
+                    ->map(fn ($campo) => [
+                        'etiqueta' => self::ETIQUETAS_PDF[$campo] ?? ucfirst(str_replace('_', ' ', $campo)),
+                        'valor' => $this->formatearValorPdf($campo, $caso->{$campo}),
+                    ])->values()->all(),
+            ])
+            ->filter(fn ($seccion) => count($seccion['campos']) > 0)
+            ->values();
 
-        $seccionesPdf = [
-            [
-                'titulo' => $secciones[0]['titulo'],
-                'campos' => collect($secciones[0]['campos'])->map(fn ($valor, $campo) => [
-                    'etiqueta' => str_replace('_', ' ', $campo),
-                    'valor' => is_array($valor) ? json_encode($valor, JSON_UNESCAPED_UNICODE) : (string) ($valor ?? ''),
-                ])->values()->all(),
-            ],
-        ];
+        $asignados = collect(self::SECCIONES_PDF)->flatMap(fn ($seccion) => $seccion['campos'])->all();
+        $restantes = collect($atributos)->except($asignados)->map(fn ($valor, $campo) => [
+            'etiqueta' => self::ETIQUETAS_PDF[$campo] ?? ucfirst(str_replace('_', ' ', $campo)),
+            'valor' => $this->formatearValorPdf($campo, $valor),
+        ])->values();
+        if ($restantes->isNotEmpty()) $seccionesPdf->push(['titulo' => 'Otros datos', 'campos' => $restantes->all()]);
+        $seccionesPdf = $seccionesPdf->all();
 
         $documentos = collect($this->documentos($caso))->map(fn ($documento) => str_replace('_', ' ', $documento['nombre']) . ' — ' . basename($documento['path']))->all();
 
@@ -335,6 +412,7 @@ class ValidacionCasoController extends Controller
             'documentos' => $documentos,
             'incluirConversaciones' => $incluirConversaciones,
             'conversaciones' => $conversaciones,
+            'logoPath' => public_path('images/logo-somos-defensores.png'),
         ])->setPaper('a4');
 
         $nombreArchivo = 'caso_' . \Illuminate\Support\Str::slug($nombreCaso ?: $casoId) . '.pdf';

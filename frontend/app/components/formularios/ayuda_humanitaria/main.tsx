@@ -10,6 +10,7 @@ import {
   formularioProteccionIndividualInicial,
 } from "@/types/formularios/proteccion-individual.types";
 import { enviarProteccionIndividual } from "@/services/formularios/proteccion-individual.service";
+import Stepper from "@/app/components/formularios/shared/stepper";
 import PasoEntrevistaInicial from "./paso1";
 import PasoRemisionSolicitud from "./paso2";
 import PasoInformacionCaso from "./paso3";
@@ -266,9 +267,14 @@ export default function FormularioProteccionIndividualPage({
     <div className="min-h-screen bg-[#f5f5f5] px-4 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#8e2329] text-2xl text-white">
+          <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 14 }}
+            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#8e2329] text-2xl text-white shadow-lg shadow-[#8e2329]/30"
+          >
             🛡️
-          </div>
+          </motion.div>
 
           <h1 className="text-2xl font-bold text-[#8e2329] md:text-3xl">
             {esPasantia ? "Solicitud de pasantía" : "Solicitud de Apoyo de Protección Individual"}
@@ -281,93 +287,15 @@ export default function FormularioProteccionIndividualPage({
           </p>
         </div>
 
-        <div className="mb-8 rounded-xl border border-gray-200 bg-[#fefbfb] p-5 shadow-sm">
-          <div className="flex items-center">
-            <div className="flex flex-1 items-center">
-              <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold ${
-                  paso >= 1 ? "bg-[#8e2329] text-white" : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                1
-              </div>
-
-              <div
-                className={`ml-3 text-sm font-semibold ${
-                  paso >= 1 ? "text-[#8e2329]" : "text-gray-400"
-                }`}
-              >
-                Información personal
-              </div>
-            </div>
-
-            <div
-              className={`h-1 flex-1 rounded ${paso >= 2 ? "bg-[#8e2329]" : "bg-gray-200"}`}
-            />
-
-            <div className="flex flex-1 items-center justify-center">
-              <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold ${
-                  paso >= 2 ? "bg-[#8e2329] text-white" : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                2
-              </div>
-
-              <div
-                className={`ml-3 text-sm font-semibold ${
-                  paso >= 2 ? "text-[#8e2329]" : "text-gray-400"
-                }`}
-              >
-                Remisión de la solicitud
-              </div>
-            </div>
-
-            <div
-              className={`h-1 flex-1 rounded ${paso >= 3 ? "bg-[#8e2329]" : "bg-gray-200"}`}
-            />
-
-            <div className="flex flex-1 items-center justify-center">
-              <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold ${
-                  paso >= 3 ? "bg-[#8e2329] text-white" : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                3
-              </div>
-
-              <div
-                className={`ml-3 text-sm font-semibold ${
-                  paso >= 3 ? "text-[#8e2329]" : "text-gray-400"
-                }`}
-              >
-                Información de las agresiones
-              </div>
-            </div>
-
-            <div
-              className={`h-1 flex-1 rounded ${paso >= 4 ? "bg-[#8e2329]" : "bg-gray-200"}`}
-            />
-
-            <div className="flex flex-1 items-center justify-end">
-              <div
-                className={`mr-3 text-right text-sm font-semibold ${
-                  paso >= 4 ? "text-[#8e2329]" : "text-gray-400"
-                }`}
-              >
-                Documentos
-              </div>
-
-              <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold ${
-                  paso >= 4 ? "bg-[#8e2329] text-white" : "bg-gray-200 text-gray-500"
-                }`}
-              >
-                4
-              </div>
-            </div>
-          </div>
-        </div>
+        <Stepper
+          pasoActual={paso}
+          pasos={[
+            { numero: 1, etiqueta: "Información personal" },
+            { numero: 2, etiqueta: "Remisión de la solicitud" },
+            { numero: 3, etiqueta: "Información de las agresiones" },
+            { numero: 4, etiqueta: "Documentos" },
+          ]}
+        />
 
         <AnimatePresence>
         {mensaje && (
@@ -412,51 +340,61 @@ export default function FormularioProteccionIndividualPage({
         </AnimatePresence>
 
         <form onSubmit={enviarFormulario}>
-          {paso === 1 && (
-            <PasoEntrevistaInicial
-              formulario={formulario}
-              errores={errores}
-              edadesHijos={edadesHijos}
-              personasConviven={personasConviven}
-              onCampoChange={actualizarCampo}
-              onEdadesHijosChange={setEdadesHijos}
-              onPersonasConvivenChange={setPersonasConviven}
-              onSiguiente={siguientePaso}
-              esPasantia={esPasantia}
-            />
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={paso}
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -24 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+            >
+              {paso === 1 && (
+                <PasoEntrevistaInicial
+                  formulario={formulario}
+                  errores={errores}
+                  edadesHijos={edadesHijos}
+                  personasConviven={personasConviven}
+                  onCampoChange={actualizarCampo}
+                  onEdadesHijosChange={setEdadesHijos}
+                  onPersonasConvivenChange={setPersonasConviven}
+                  onSiguiente={siguientePaso}
+                  esPasantia={esPasantia}
+                />
+              )}
 
-          {paso === 2 && (
-            <PasoRemisionSolicitud
-              formulario={formulario}
-              errores={errores}
-              onCampoChange={actualizarCampo}
-              onVolver={pasoAnterior}
-              onSiguiente={siguientePaso}
-            />
-          )}
+              {paso === 2 && (
+                <PasoRemisionSolicitud
+                  formulario={formulario}
+                  errores={errores}
+                  onCampoChange={actualizarCampo}
+                  onVolver={pasoAnterior}
+                  onSiguiente={siguientePaso}
+                />
+              )}
 
-          {paso === 3 && (
-            <PasoInformacionCaso
-              errores={errores}
-              agresiones={agresiones}
-              onAgresionesChange={setAgresiones}
-              onVolver={pasoAnterior}
-              onSiguiente={siguientePaso}
-            />
-          )}
+              {paso === 3 && (
+                <PasoInformacionCaso
+                  errores={errores}
+                  agresiones={agresiones}
+                  onAgresionesChange={setAgresiones}
+                  onVolver={pasoAnterior}
+                  onSiguiente={siguientePaso}
+                />
+              )}
 
-          {paso === 4 && (
-            <PasoDocumentos
-              formulario={formulario}
-              errores={errores}
-              documentos={documentos}
-              onArchivoChange={actualizarArchivo}
-              onArchivosMultiplesChange={actualizarArchivosMultiples}
-              onVolver={pasoAnterior}
-              enviando={enviando}
-            />
-          )}
+              {paso === 4 && (
+                <PasoDocumentos
+                  formulario={formulario}
+                  errores={errores}
+                  documentos={documentos}
+                  onArchivoChange={actualizarArchivo}
+                  onArchivosMultiplesChange={actualizarArchivosMultiples}
+                  onVolver={pasoAnterior}
+                  enviando={enviando}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </form>
 
         <div className="mt-8 rounded-xl border border-gray-200 bg-white p-5">
