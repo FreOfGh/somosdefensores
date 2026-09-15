@@ -2,7 +2,7 @@ FROM composer:2 AS dependencies
 
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
+RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts
 
 FROM php:8.3-fpm-alpine
 
@@ -17,6 +17,7 @@ WORKDIR /var/www/html
 
 COPY --from=dependencies /app/vendor ./vendor
 COPY . .
+RUN php artisan package:discover --ansi
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/php.ini /usr/local/etc/php/conf.d/railway.ini
 COPY docker/start-container.sh /usr/local/bin/start-container
