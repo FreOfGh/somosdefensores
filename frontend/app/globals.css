@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/*
+ * Variables globales del proyecto
+ *
+ * Color principal:   #2596be
+ * Color secundario:  #8e2329
+ * Color de fondo:    #f5f5f5
+ * Tipografía:        Arial, Helvetica, sans-serif
+ */
+
+:root {
+  --background: #f5f5f5;
+  --foreground: #000000;
+
+  --color-primary: #fefbfb;
+  --color-secondary: #8e2329;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

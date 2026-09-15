@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.11" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>MANUAL_DE_USUARIO</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="manual-de-usuario">Manual de usuario</h1>
+<h2
+id="plataforma-de-registro-y-seguimiento-de-casos-sociales">Plataforma
+de registro y seguimiento de casos sociales</h2>
+<p><strong>Version documentada:</strong> 7 de septiembre de 2026<br />
+<strong>Aplicacion:</strong> Casos Sociales / Somos Defensores<br />
+<strong>Creado por:</strong> Simon Torres Saldarriaga<br />
+<strong>Contacto:</strong> sitorress@unal.edu.co | Celular:
+3127355474<br />
+<strong>Audiencia:</strong> personas solicitantes, equipos de validacion
+y equipos de revision</p>
+<p>Este manual explica como utilizar la version actual de la plataforma.
+Las capturas se tomaron con el frontend ejecutandose en
+<code>http://localhost:3000</code>; los datos que aparecen en listados
+administrativos dependen de la conexion con la API y de los permisos del
+usuario.</p>
+<h2 id="que-permite-hacer-la-plataforma">1. Que permite hacer la
+plataforma?</h2>
+<p>La plataforma centraliza el registro y seguimiento de solicitudes
+sociales. Sus funciones principales son:</p>
+<ul>
+<li>Registrar solicitudes de ayuda humanitaria.</li>
+<li>Registrar solicitudes de pasantia.</li>
+<li>Registrar solicitudes de proteccion colectiva.</li>
+<li>Revisar y gestionar solicitudes desde el area administrativa.</li>
+<li>Consultar metricas y graficos de casos.</li>
+<li>Enviar una invitacion para finalizar un caso y registrar la
+respuesta de cierre.</li>
+</ul>
+<h2 id="requisitos-de-acceso">2. Requisitos de acceso</h2>
+<h3 id="para-personas-solicitantes">Para personas solicitantes</h3>
+<ul>
+<li>Navegador web actualizado.</li>
+<li>Conexion a internet o a la red donde este publicada la
+plataforma.</li>
+<li>Informacion personal, de contacto y del caso.</li>
+<li>Documentos solicitados por el formulario, en el formato y tamano
+aceptados.</li>
+</ul>
+<h3 id="para-personal-administrativo">Para personal administrativo</h3>
+<ul>
+<li>Una cuenta habilitada por el administrador.</li>
+<li>Rol de revision o administracion asignado.</li>
+<li>Correo electronico y contrasena validos.</li>
+</ul>
+<h3 id="para-ejecutar-el-sistema-en-un-entorno-local">Para ejecutar el
+sistema en un entorno local</h3>
+<p>Se necesitan Node.js, npm, PHP, Composer y una base de datos
+compatible con Laravel.</p>
+<p>Desde la carpeta <code>backend</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">composer</span> install</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> artisan serve</span></code></pre></div>
+<p>Desde la carpeta <code>frontend</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
+<p>Direcciones habituales:</p>
+<ul>
+<li>Frontend: <code>http://localhost:3000</code></li>
+<li>Backend: <code>http://localhost:8000</code></li>
+</ul>
+<p>El frontend debe tener configurada la variable
+<code>NEXT_PUBLIC_API_URL</code> apuntando al backend. Sin esa
+configuracion, las consultas y los formularios que envian informacion no
+podran comunicarse con la API.</p>
+<h2 id="navegacion-publica">3. Navegacion publica</h2>
+<h3 id="pantalla-de-inicio">3.1 Pantalla de inicio</h3>
+<p>En la pantalla de inicio se muestran las opciones disponibles para
+registrar un caso: ayuda humanitaria, pasantia y proteccion
+colectiva.</p>
+<figure>
+<img src="manual/capturas/01-inicio.png"
+alt="Pantalla de inicio con los formularios disponibles" />
+<figcaption aria-hidden="true">Pantalla de inicio con los formularios
+disponibles</figcaption>
+</figure>
+<p><strong>Como usarla:</strong></p>
+<ol type="1">
+<li>Lea el nombre y la descripcion de cada formulario.</li>
+<li>Seleccione el formulario que corresponda a su situacion.</li>
+<li>Use la opcion de informacion (<code>?</code>) cuando necesite
+conocer el proposito del formulario.</li>
+<li>Presione la tarjeta para comenzar el registro.</li>
+</ol>
+<p>La seccion inferior permite volver al registro y encontrar los
+canales de contacto publicados por la organizacion.</p>
+<h3 id="formularios-disponibles">3.2 Formularios disponibles</h3>
+<p>La pantalla de seleccion ofrece estas alternativas:</p>
+<ul>
+<li><strong>Ayuda humanitaria:</strong> registro de una solicitud
+individual de apoyo.</li>
+<li><strong>Pasantia:</strong> registro de una solicitud relacionada con
+el proceso de pasantia.</li>
+<li><strong>Proteccion colectiva:</strong> registro de una organizacion,
+colectivo o comunidad que solicita medidas de proteccion.</li>
+</ul>
+<p>El formulario de ayuda humanitaria se encuentra organizado por
+etapas. Las etapas visibles son:</p>
+<ol type="1">
+<li>Informacion personal.</li>
+<li>Remision de la solicitud.</li>
+<li>Informacion del caso.</li>
+<li>Documentos.</li>
+</ol>
+<h3 id="diligenciar-ayuda-humanitaria">3.3 Diligenciar ayuda
+humanitaria</h3>
+<h4 id="etapa-1.-informacion-personal">Etapa 1. Informacion
+personal</h4>
+<figure>
+<img src="manual/capturas/etapa-01-ayuda-humanitaria.png"
+alt="Etapa 1 del formulario de ayuda humanitaria: informacion personal" />
+<figcaption aria-hidden="true">Etapa 1 del formulario de ayuda
+humanitaria: informacion personal</figcaption>
+</figure>
+<p>En esta etapa se identifica a la persona solicitante y se registra su
+contexto basico:</p>
+<ul>
+<li>Fecha de ocurrencia del caso.</li>
+<li>Nombres y apellidos.</li>
+<li>Tipo y numero de documento.</li>
+<li>Edad y genero.</li>
+<li>Telefono y correo electronico.</li>
+<li>Grupo etnico, cuando aplique.</li>
+<li>Organizacion a la que pertenece la persona solicitante.</li>
+<li>Condicion de discapacidad y condicion especial de salud.</li>
+<li>Composicion del grupo familiar.</li>
+<li>Lugar de procedencia y lugar de residencia.</li>
+</ul>
+<p>Los campos marcados con <code>*</code> son obligatorios.</p>
+<p>Seleccione primero el departamento para habilitar los municipios de
+procedencia y residencia. Si la persona tiene hijos o personas que
+conviven con ella, agregue la informacion solicitada en la seccion
+familiar.</p>
+<h4 id="etapa-2.-remision-de-la-solicitud">Etapa 2. Remision de la
+solicitud</h4>
+<figure>
+<img src="manual/capturas/etapa-02-ayuda-humanitaria.png"
+alt="Etapa 2 del formulario de ayuda humanitaria: remision" />
+<figcaption aria-hidden="true">Etapa 2 del formulario de ayuda
+humanitaria: remision</figcaption>
+</figure>
+<p>Esta etapa registra la organizacion que presenta o remite el caso.
+Incluye el nombre de la organizacion y, opcionalmente, los datos de la
+persona que realiza la remision: nombre, correo y celular.</p>
+<p>El campo <strong>Organizacion que remite el caso</strong> es
+obligatorio. Presione <strong>Continuar</strong> para avanzar.</p>
+<h4 id="etapa-3.-informacion-del-caso">Etapa 3. Informacion del
+caso</h4>
+<figure>
+<img src="manual/capturas/etapa-03-ayuda-humanitaria.png"
+alt="Etapa 3 del formulario de ayuda humanitaria: informacion del caso" />
+<figcaption aria-hidden="true">Etapa 3 del formulario de ayuda
+humanitaria: informacion del caso</figcaption>
+</figure>
+<p>Describa la situacion que origina la solicitud mediante tres campos
+obligatorios:</p>
+<ul>
+<li>Motivo de solicitud.</li>
+<li>Fecha, lugar y descripcion detallada del caso.</li>
+<li>Riesgo, motivos de la amenaza y presuntos responsables.</li>
+</ul>
+<p>Escriba solamente la informacion necesaria para la evaluacion y evite
+incluir datos que puedan poner a alguien en riesgo.</p>
+<h4 id="etapa-4.-documentos-adjuntos">Etapa 4. Documentos adjuntos</h4>
+<figure>
+<img src="manual/capturas/etapa-04-ayuda-humanitaria.png"
+alt="Etapa 4 del formulario de ayuda humanitaria: documentos" />
+<figcaption aria-hidden="true">Etapa 4 del formulario de ayuda
+humanitaria: documentos</figcaption>
+</figure>
+<p>Adjunte los soportes de la solicitud. Son obligatorios la
+certificacion de cuenta bancaria y el documento de identidad. Tambien
+puede agregar carta de la organizacion, evidencias, denuncias ante
+organismos del Estado y otros documentos pertinentes.</p>
+<p>La pantalla acepta archivos PDF, JPG, PNG, DOC o DOCX. Revise cada
+archivo antes de presionar <strong>Enviar solicitud</strong>.</p>
+<p><strong>Procedimiento recomendado para completar las cuatro
+etapas:</strong></p>
+<ol type="1">
+<li>Ingrese la fecha del caso.</li>
+<li>Escriba los datos exactamente como aparecen en el documento de
+identidad.</li>
+<li>Seleccione las opciones de las listas desplegables; no deje la
+opcion predeterminada si el campo es obligatorio.</li>
+<li>Use unicamente numeros en los campos que indiquen
+<code>Solo numeros</code>.</li>
+<li>En los campos de departamento y municipio, seleccione primero el
+departamento para habilitar los municipios correspondientes.</li>
+<li>Agregue las personas del grupo familiar con
+<code>Agregar persona</code> cuando sea necesario.</li>
+<li>Use <strong>Continuar</strong> para avanzar y
+<strong>Volver</strong> para corregir una etapa anterior.</li>
+<li>Adjunte los documentos solicitados y revise la informacion antes de
+enviar.</li>
+<li>Espere el mensaje de confirmacion. Conserve cualquier numero, codigo
+o token que entregue el sistema.</li>
+</ol>
+<p><strong>Importante:</strong> no envie informacion de otra persona sin
+contar con la autorizacion correspondiente. Revise especialmente el
+numero de identificacion, el correo y el telefono, porque pueden
+utilizarse para consultar o continuar el caso.</p>
+<h3 id="diligenciar-proteccion-colectiva">3.4 Diligenciar proteccion
+colectiva</h3>
+<h4 id="etapa-1.-informacion-general-del-caso">Etapa 1. Informacion
+general del caso</h4>
+<figure>
+<img src="manual/capturas/etapa-01-proteccion-colectiva.png"
+alt="Etapa 1 del formulario de proteccion colectiva: informacion general" />
+<figcaption aria-hidden="true">Etapa 1 del formulario de proteccion
+colectiva: informacion general</figcaption>
+</figure>
+<p>Este formulario esta dirigido a organizaciones, colectivos y
+comunidades. En esta primera etapa se identifica la organizacion y a la
+persona que la representa.</p>
+<p>En la primera etapa se solicita:</p>
+<ul>
+<li>Fecha de remision del caso.</li>
+<li>Existencia de personeria juridica.</li>
+<li>Nombre de la organizacion, colectivo o comunidad.</li>
+<li>Nombres, apellidos y cargo de la persona representante o
+autorizada.</li>
+<li>Numero de identificacion, telefono y correo electronico.</li>
+<li>Departamento, municipio y vereda.</li>
+</ul>
+<p><strong>Como completar la etapa:</strong></p>
+<ol type="1">
+<li>Diligencie la fecha de remision.</li>
+<li>Indique si la organizacion tiene personeria juridica.</li>
+<li>Escriba el nombre completo de la organizacion, colectivo o
+comunidad.</li>
+<li>Registre los datos de la persona representante, directora o
+autorizada.</li>
+<li>Complete la ubicacion territorial.</li>
+<li>Presione <strong>Continuar</strong> para pasar a la segunda
+etapa.</li>
+</ol>
+<h4 id="etapa-2.-seguridad-y-proteccion">Etapa 2. Seguridad y
+proteccion</h4>
+<figure>
+<img src="manual/capturas/etapa-02-proteccion-colectiva.png"
+alt="Etapa 2 del formulario de proteccion colectiva: seguridad y proteccion" />
+<figcaption aria-hidden="true">Etapa 2 del formulario de proteccion
+colectiva: seguridad y proteccion</figcaption>
+</figure>
+<p>Esta pantalla concentra la descripcion de la organizacion y la
+situacion de seguridad. Contiene cuatro bloques:</p>
+<ol type="1">
+<li><strong>Informacion de la organizacion:</strong> numero de personas
+o familias, estructura, reivindicaciones y derechos defendidos.</li>
+<li><strong>Situacion de seguridad:</strong> riesgos, agresiones,
+incidentes, afectacion del trabajo y actores que generan el riesgo.</li>
+<li><strong>Medidas de proteccion colectiva:</strong> medidas
+solicitadas y justificacion de como ayudarian a reducir los
+riesgos.</li>
+<li><strong>Informacion adicional:</strong> datos pertinentes que no
+hayan sido incluidos en los campos anteriores.</li>
+</ol>
+<p>Los campos marcados con <code>*</code> son obligatorios. Revise que
+las descripciones sean claras y veraces antes de presionar
+<strong>Enviar solicitud</strong>.</p>
+<p>Los campos marcados con <code>*</code> son obligatorios. La
+informacion debe ser clara, completa y veraz, porque se utiliza para
+evaluar la solicitud de medidas de proteccion colectiva.</p>
+<h3 id="diligenciar-pasantia">3.5 Diligenciar pasantia</h3>
+<h4 id="etapa-1.-informacion-personal-1">Etapa 1. Informacion
+personal</h4>
+<figure>
+<img src="manual/capturas/etapa-01-pasantia.png"
+alt="Etapa 1 del formulario de pasantia: informacion personal" />
+<figcaption aria-hidden="true">Etapa 1 del formulario de pasantia:
+informacion personal</figcaption>
+</figure>
+<p>El formulario de pasantia utiliza las etapas <strong>Informacion
+personal</strong>, <strong>Remision de la solicitud</strong>,
+<strong>Informacion del caso</strong> y <strong>Documentos</strong>. En
+esta primera etapa se registra la informacion de la persona y el tipo de
+pasantia.</p>
+<p>En la primera etapa se solicita:</p>
+<ul>
+<li>Fecha de ocurrencia del caso.</li>
+<li>Nombres y apellidos.</li>
+<li>Tipo y numero de documento.</li>
+<li>Edad y genero.</li>
+<li>Telefono y correo electronico.</li>
+<li>Grupo etnico, cuando aplique.</li>
+<li>Organizacion a la que pertenece la persona solicitante.</li>
+<li>Condiciones de discapacidad y salud.</li>
+<li>Composicion del grupo familiar.</li>
+<li>Lugar de procedencia y lugar de residencia.</li>
+<li>Tipo de pasantia.</li>
+</ul>
+<p>Los campos marcados con <code>*</code> son obligatorios.</p>
+<h4 id="etapa-2.-remision-de-la-solicitud-1">Etapa 2. Remision de la
+solicitud</h4>
+<figure>
+<img src="manual/capturas/etapa-02-pasantia.png"
+alt="Etapa 2 del formulario de pasantia: remision" />
+<figcaption aria-hidden="true">Etapa 2 del formulario de pasantia:
+remision</figcaption>
+</figure>
+<p>Registre la organizacion que remite el caso y, si corresponde, el
+nombre, correo electronico y celular de la persona que realiza la
+remision. La organizacion remitente es obligatoria.</p>
+<h4 id="etapa-3.-informacion-del-caso-1">Etapa 3. Informacion del
+caso</h4>
+<figure>
+<img src="manual/capturas/etapa-03-pasantia.png"
+alt="Etapa 3 del formulario de pasantia: informacion del caso" />
+<figcaption aria-hidden="true">Etapa 3 del formulario de pasantia:
+informacion del caso</figcaption>
+</figure>
+<p>Explique el motivo por el cual solicita la pasantia, la fecha, el
+lugar y la descripcion de los hechos, junto con los riesgos o
+circunstancias relevantes. Los tres campos de esta etapa son
+obligatorios.</p>
+<h4 id="etapa-4.-documentos-adjuntos-1">Etapa 4. Documentos
+adjuntos</h4>
+<figure>
+<img src="manual/capturas/etapa-04-pasantia.png"
+alt="Etapa 4 del formulario de pasantia: documentos" />
+<figcaption aria-hidden="true">Etapa 4 del formulario de pasantia:
+documentos</figcaption>
+</figure>
+<p>Adjunte la certificacion de cuenta bancaria y el documento de
+identidad, que son obligatorios. Puede agregar carta de la organizacion,
+evidencias, denuncias y otros documentos pertinentes.</p>
+<p><strong>Procedimiento:</strong></p>
+<ol type="1">
+<li>Complete la fecha y la informacion personal.</li>
+<li>Seleccione el tipo de documento, genero y demas opciones de las
+listas.</li>
+<li>Agregue las personas del grupo familiar cuando sea necesario.</li>
+<li>Seleccione primero el departamento para cargar los municipios
+disponibles y seleccione el tipo de pasantia.</li>
+<li>Complete la remision, la informacion especifica del caso y los
+documentos.</li>
+<li>Revise los datos y envie la solicitud.</li>
+</ol>
+<p>La plataforma utiliza la misma estructura de captura de informacion
+personal que ayuda humanitaria, pero el caso queda clasificado como
+pasantia.</p>
+<p>Si una opcion del formulario no esta disponible o la pantalla muestra
+un error, registre la incidencia con la fecha, la ruta visitada y el
+mensaje mostrado. No vuelva a enviar varias veces la misma solicitud sin
+confirmar primero si el registro fue creado.</p>
+<h2 id="acceso-administrativo">4. Acceso administrativo</h2>
+<h3 id="inicio-de-sesion">4.1 Inicio de sesion</h3>
+<p>La pantalla administrativa esta disponible en
+<code>/login</code>.</p>
+<figure>
+<img src="manual/capturas/05-inicio-sesion.png"
+alt="Inicio de sesion administrativo" />
+<figcaption aria-hidden="true">Inicio de sesion
+administrativo</figcaption>
+</figure>
+<p><strong>Pasos:</strong></p>
+<ol type="1">
+<li>Escriba el correo electronico de la cuenta autorizada.</li>
+<li>Escriba la contrasena.</li>
+<li>Presione <strong>Ingresar</strong>.</li>
+<li>Espere la redireccion al dashboard.</li>
+</ol>
+<p>El acceso esta restringido a usuarios con rol de revision o
+administracion. No comparta la contrasena ni guarde el token de acceso
+fuera del navegador autorizado.</p>
+<p>Si el inicio de sesion falla, revise el mensaje mostrado, confirme
+que el correo este escrito correctamente y compruebe que el backend este
+disponible. El dashboard redirige a esta pantalla cuando no existe una
+sesion valida.</p>
+<h3 id="dashboard">4.2 Dashboard</h3>
+<figure>
+<img src="manual/capturas/06-dashboard-administrativo.png"
+alt="Dashboard administrativo" />
+<figcaption aria-hidden="true">Dashboard administrativo</figcaption>
+</figure>
+<p>El dashboard administrativo presenta:</p>
+<ul>
+<li>Total de casos.</li>
+<li>Total por tipo de caso.</li>
+<li>Distribucion por estado.</li>
+<li>Grafico de casos por tipo.</li>
+<li>Grafico de casos por estado.</li>
+<li>Grafico dinamico por ayuda humanitaria, pasantia o proteccion
+colectiva.</li>
+<li>Boton para actualizar las metricas.</li>
+</ul>
+<p><strong>Como leer y utilizar el dashboard:</strong></p>
+<ol type="1">
+<li>Revise la tarjeta <strong>Total de casos</strong> para conocer el
+volumen general.</li>
+<li>Compare las tarjetas por tipo: ayuda humanitaria, pasantia y
+proteccion colectiva.</li>
+<li>Consulte el grafico de casos por tipo para identificar la
+distribucion de solicitudes.</li>
+<li>Consulte el grafico de casos por estado para observar pendientes,
+aprobados, finalizados u otros estados disponibles.</li>
+<li>En <strong>Generador de graficos dinamicos</strong>, seleccione el
+tipo de caso y el campo principal.</li>
+<li>Use <strong>Cruzar con</strong> para comparar dos variables,
+seleccione barras o torta y defina un rango de fechas si es
+necesario.</li>
+<li>Presione <strong>Generar grafico</strong> y use <strong>Descargar
+PNG</strong> para guardar el resultado.</li>
+<li>Use <strong>Actualizar metricas</strong> despues de registrar o
+modificar varios casos.</li>
+</ol>
+<p>Si no existen registros o la API no responde, el sistema muestra un
+mensaje y no debe interpretarse como que se eliminaron casos.</p>
+<h3 id="usuarios">4.3 Usuarios</h3>
+<p>La seccion de usuarios esta disponible en
+<code>/admin/usuarios</code> y permite gestionar el equipo de validacion
+y revision.</p>
+<figure>
+<img src="manual/capturas/07-usuarios-administrativo.png"
+alt="Administracion de usuarios" />
+<figcaption aria-hidden="true">Administracion de usuarios</figcaption>
+</figure>
+<p>La pantalla se divide en dos areas:</p>
+<ul>
+<li><strong>Crear usuario:</strong> formulario para registrar nombre
+completo, correo, contrasena, confirmacion de contrasena y rol.</li>
+<li><strong>Listado de usuarios:</strong> tabla con nombre, correo, rol
+y acciones disponibles.</li>
+</ul>
+<p><strong>Crear una cuenta:</strong></p>
+<ol type="1">
+<li>Escriba el nombre completo.</li>
+<li>Registre un correo valido y que pertenezca a la persona
+autorizada.</li>
+<li>Defina una contrasena de al menos ocho caracteres.</li>
+<li>Repita la contrasena exactamente en el campo de confirmacion.</li>
+<li>Seleccione el rol <strong>Validador</strong> o
+<strong>Revisor</strong>.</li>
+<li>Presione <strong>Crear usuario</strong>.</li>
+<li>Confirme el mensaje de creacion exitosa.</li>
+</ol>
+<p><strong>Filtrar y actualizar el listado:</strong></p>
+<ol type="1">
+<li>Abra el selector <strong>Todos los roles</strong>.</li>
+<li>Seleccione <strong>Validador</strong> o <strong>Revisor</strong>
+para limitar los resultados.</li>
+<li>Presione <strong>Actualizar listado</strong> para consultar
+nuevamente la API.</li>
+</ol>
+<p><strong>Cambiar una contrasena:</strong></p>
+<ol type="1">
+<li>Ubique la cuenta en el listado.</li>
+<li>Presione <strong>Cambiar contraseña</strong>.</li>
+<li>Escriba y confirme la nueva contrasena.</li>
+<li>Verifique el mensaje de confirmacion.</li>
+</ol>
+<p><strong>Eliminar una cuenta:</strong></p>
+<ol type="1">
+<li>Confirme que la cuenta seleccionada sea la correcta.</li>
+<li>Presione <strong>Eliminar usuario</strong>.</li>
+<li>Revise el aviso de confirmacion antes de aceptar.</li>
+<li>Actualice el listado y confirme que la cuenta ya no aparece.</li>
+</ol>
+<p>La administracion de usuarios es una funcion sensible. No cree
+cuentas compartidas, no reutilice contrasenas y no elimine la unica
+cuenta con rol de revisor. Las contrasenas nunca deben registrarse en
+este manual ni compartirse por canales publicos.</p>
+<h3 id="listados-de-casos">4.4 Listados de casos</h3>
+<p>Los listados administrativos se consultan por tipo:</p>
+<ul>
+<li><code>/admin/ayuda_humanitaria</code></li>
+<li><code>/admin/pasantias</code></li>
+<li><code>/admin/proteccion_colectiva</code></li>
+</ul>
+<p>Segun el modulo, se puede:</p>
+<ul>
+<li>Buscar por nombre, organizacion, documento, representante o
+correo.</li>
+<li>Filtrar por estado.</li>
+<li>Filtrar por pago y rango de fechas en ayudas humanitarias.</li>
+<li>Actualizar los datos desde el backend.</li>
+<li>Exportar los registros a CSV.</li>
+<li>Abrir la gestion detallada de un caso.</li>
+<li>Enviar la invitacion de finalizacion del caso.</li>
+</ul>
+<p>En ayudas humanitarias, la pantalla resume total de solicitudes,
+pendientes, aprobadas y rechazadas. En proteccion colectiva resume
+total, pendientes y resultados filtrados.</p>
+<h3 id="gestion-de-un-caso">4.5 Gestion de un caso</h3>
+<p>Desde la fila del caso, abra la opcion de gestionar. Revise los datos
+personales o de la organizacion, la informacion de contacto, el estado
+actual y la informacion del caso antes de modificarlo.</p>
+<p>Al cambiar un estado:</p>
+<ol type="1">
+<li>Verifique que esta trabajando sobre el caso correcto.</li>
+<li>Lea toda la informacion disponible.</li>
+<li>Seleccione el nuevo estado permitido para su rol.</li>
+<li>Guarde el cambio.</li>
+<li>Actualice el listado y confirme que el estado se refleja
+correctamente.</li>
+</ol>
+<p>Los estados pueden incluir <code>pendiente</code>,
+<code>en revision</code>, <code>validado</code>, <code>rechazado</code>,
+<code>aprobado</code>, <code>en proceso de cierre</code>,
+<code>desembolsado</code> y <code>finalizado</code>, de acuerdo con el
+flujo habilitado en el backend.</p>
+<h3 id="finalizar-un-caso">4.6 Finalizar un caso</h3>
+<p>Desde el listado administrativo, use la accion de finalizacion del
+caso. El sistema genera un enlace unico y lo envia al correo asociado al
+registro.</p>
+<p>La persona destinataria abre el enlace recibido y debe:</p>
+<ol type="1">
+<li>Leer la informacion de cierre.</li>
+<li>Escribir una respuesta en el campo de finalizacion.</li>
+<li>Presionar <strong>Finalizar caso</strong>.</li>
+<li>Confirmar el mensaje de registro exitoso.</li>
+</ol>
+<p>El enlace tiene una vigencia de siete dias y solo puede utilizarse
+una vez. Una vez registrada la respuesta, el caso pasa a estado
+<code>finalizado</code> y el enlace deja de ser valido.</p>
+<h2 id="gestion-completa-de-un-caso">5. Gestion completa de un caso</h2>
+<p>El flujo administrativo se recorre desde el listado del tipo de caso.
+Para la prueba incluida en el seeder, el registro aparece como
+<strong>Caso de prueba Manual</strong>, con identificacion
+<code>PRUEBA-MANUAL-001</code> y estado
+<code>pendiente de revisión</code>. Este registro es ficticio y sirve
+para practicar sin usar datos de una persona real.</p>
+<p>Para cargar este caso en un entorno local de pruebas, ejecute desde
+<code>backend</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">php</span> artisan db:seed <span class="at">--class</span><span class="op">=</span>DatabaseSeeder</span></code></pre></div>
+<p>No ejecute este comando en produccion sin revisar antes los datos que
+el seeder agrega o actualiza.</p>
+<h3 id="ver-el-caso-por-secciones">5.1 Ver el caso por secciones</h3>
+<figure>
+<img src="manual/capturas/08-gestionar-caso-secciones.png"
+alt="Pantalla Gestionar caso con sus secciones administrativas" />
+<figcaption aria-hidden="true">Pantalla Gestionar caso con sus secciones
+administrativas</figcaption>
+</figure>
+<p>Desde el listado, presione <strong>Gestionar</strong> en la fila del
+caso. La pantalla organiza la informacion en bloques para facilitar la
+lectura:</p>
+<ul>
+<li><strong>Informacion personal:</strong> nombres, documento, edad,
+genero, telefono, correo y grupo etnico.</li>
+<li><strong>Salud:</strong> discapacidad y condiciones especiales de
+salud.</li>
+<li><strong>Composicion del grupo familiar:</strong> estado civil,
+hijos, edades, personas convivientes y total del grupo.</li>
+<li><strong>Lugar de procedencia:</strong> departamento, municipio,
+vereda o consejo comunitario / resguardo o comunidad indigena.</li>
+<li><strong>Lugar de residencia:</strong> departamento, municipio,
+vereda o consejo comunitario / resguardo o comunidad indigena.</li>
+<li><strong>Organizacion y remision:</strong> organizacion, persona
+remitente, correo, celular y tipo de pasantia cuando corresponda.</li>
+<li><strong>Informacion del caso:</strong> motivo de solicitud, fecha,
+lugar, descripcion, riesgos y amenazas.</li>
+<li><strong>Seguimiento administrativo:</strong> fecha de remision,
+concepto, seguimiento y datos de pago.</li>
+<li><strong>Documentos adjuntos:</strong> archivos recibidos, categorias
+disponibles, reemplazo, carga adicional y descarga ZIP.</li>
+<li><strong>Respuestas de validadores:</strong> historial de decisiones,
+comentarios y respuestas del equipo revisor.</li>
+<li><strong>Formulario de seguimiento:</strong> respuesta posterior al
+apoyo o desembolso.</li>
+<li><strong>Formulario de finalizacion:</strong> respuesta de cierre y
+estado del enlace.</li>
+</ul>
+<p>Use <strong>Exportar PDF</strong> para generar un resumen del caso o
+<strong>Exportar PDF con conversaciones</strong> para incluir las
+respuestas de validacion. No descargue estos archivos en equipos
+compartidos sin autorizacion.</p>
+<h3 id="gestionar-y-guardar-cambios">5.2 Gestionar y guardar
+cambios</h3>
+<ol type="1">
+<li>Abra el caso desde el listado correspondiente.</li>
+<li>Revise cada seccion antes de modificar datos.</li>
+<li>Corrija o complete los campos permitidos.</li>
+<li>Agregue documentos faltantes desde <strong>Documentos
+adjuntos</strong> o use <strong>Resubir</strong> para reemplazar un
+archivo.</li>
+<li>Presione <strong>Guardar cambios</strong>.</li>
+<li>Confirme el mensaje de actualizacion y revise que los datos
+permanezcan correctos.</li>
+</ol>
+<p>Los campos de identificacion interna, token, estado, fechas de
+auditoria y documentos protegidos no se editan directamente. Un caso
+aprobado o rechazado solo permite modificar el seguimiento y los
+documentos autorizados por el backend. Un caso finalizado no puede
+modificarse.</p>
+<h3 id="validacion-de-caso">5.3 Validacion de caso</h3>
+<p>La validacion se inicia únicamente cuando el caso esta en
+<code>pendiente de revisión</code>.</p>
+<ol type="1">
+<li>Abra el caso y revise la informacion y los documentos.</li>
+<li>Presione <strong>Iniciar validación</strong>.</li>
+<li>El sistema cambia el caso a
+<code>en proceso de validación</code>.</li>
+<li>Se generan invitaciones para hasta cinco usuarios con rol
+<code>validador</code>.</li>
+<li>Cada validador abre su enlace, revisa las secciones y documentos, y
+selecciona una decision.</li>
+<li>La decision puede ser <strong>Aprobar caso</strong>,
+<strong>Rechazar caso</strong> o <strong>Solicitar
+aclaración</strong>.</li>
+<li>Si se solicita aclaracion, el comentario que indica que debe
+aclararse es obligatorio.</li>
+<li>El equipo revisor puede responder dentro del hilo de
+validacion.</li>
+</ol>
+<p>La decision automatica requiere consenso: si todos los validadores
+responden aprobado, el caso pasa a <code>aprobado</code>; si todos
+responden rechazado, pasa a <code>rechazado</code>; si existen
+respuestas diferentes o aclaraciones, permanece en
+<code>en proceso de validación</code> hasta que el equipo resuelva la
+diferencia. Un enlace de validacion respondido, expirado o reutilizado
+deja de estar disponible.</p>
+<h3 id="desembolso">5.4 Desembolso</h3>
+<p>El desembolso se gestiona desde <strong>Seguimiento
+administrativo</strong>.</p>
+<p>Para ayuda humanitaria:</p>
+<ol type="1">
+<li>El caso debe estar en estado <code>aprobado</code>.</li>
+<li>En <strong>Pago único</strong>, seleccione
+<code>Pendiente de desembolso</code> o <code>Esperando desembolso</code>
+según el estado interno.</li>
+<li>Cuando el pago se haya realizado, seleccione
+<code>Desembolsado</code>.</li>
+<li>Confirme el mensaje de actualizacion.</li>
+</ol>
+<p>El backend no permite marcar como desembolsado un caso que no este
+aprobado. Para pasantias, el seguimiento de pagos se maneja por
+<code>Primer pago</code>, <code>Segundo pago</code> y
+<code>Tercer pago</code>; actualice cada uno con el estado que
+corresponda.</p>
+<h3 id="formulario-de-seguimiento">5.5 Formulario de seguimiento</h3>
+<p>El formulario de seguimiento se habilita para un caso aprobado. En
+ayuda humanitaria, además, el pago debe estar marcado como
+<code>desembolsado</code>.</p>
+<ol type="1">
+<li>Presione <strong>Formulario de seguimiento</strong> para enviarlo
+por correo, o <strong>Copiar link del formulario de seguimiento</strong>
+para compartir el enlace manualmente.</li>
+<li>El destinatario abre el enlace temporal
+<code>/seguimiento/{token}</code>.</li>
+<li>Debe describir su situacion actual; este campo es obligatorio.</li>
+<li>Puede indicar si recibio el apoyo o desembolso: si, parcialmente o
+no.</li>
+<li>Si la respuesta es parcial o negativa, explique la situacion del
+apoyo.</li>
+<li>Seleccione si la seguridad mejoro, permanece igual o empeoro.</li>
+<li>Agregue comentarios adicionales si es necesario.</li>
+<li>Presione <strong>Enviar seguimiento</strong>.</li>
+</ol>
+<p>El enlace vence en siete dias y solo puede utilizarse una vez. La
+respuesta queda visible en la seccion <strong>Formulario de
+seguimiento</strong> del caso.</p>
+<h3 id="formulario-de-finalizacion">5.6 Formulario de finalizacion</h3>
+<p>La finalizacion solo se habilita despues de que el formulario de
+seguimiento haya sido respondido y el caso permanezca aprobado.</p>
+<ol type="1">
+<li>Desde el caso, presione <strong>Finalizar caso</strong> para enviar
+la invitacion, o <strong>Copiar link para finalizar caso</strong> para
+compartirla manualmente.</li>
+<li>El destinatario abre <code>/finalizacion/{token}</code>.</li>
+<li>El enlace valida que el caso siga aprobado, que no haya expirado y
+que no se haya usado.</li>
+<li>La persona escribe una respuesta de finalizacion de hasta 5000
+caracteres.</li>
+<li>Presiona <strong>Finalizar caso</strong>.</li>
+<li>El sistema registra la respuesta, invalida los enlaces pendientes y
+cambia el estado a <code>finalizado</code>.</li>
+</ol>
+<p>Un caso finalizado queda bloqueado para modificaciones posteriores.
+Si el enlace es invalido, ya fue utilizado o expiro, el equipo revisor
+debe generar una nueva invitacion cuando el flujo lo permita.</p>
+<h2 id="roles-y-permisos">6. Roles y permisos</h2>
+<ul>
+<li><strong>Administrador:</strong> gestiona usuarios, casos, metricas y
+configuraciones autorizadas.</li>
+<li><strong>Equipo de validacion de casos:</strong> revisa la
+informacion y valida solicitudes segun sus permisos.</li>
+<li><strong>Equipo de revision de casos:</strong> hace seguimiento,
+actualiza estados y puede iniciar el proceso de finalizacion.</li>
+</ul>
+<p>El backend aplica autenticacion por token y middleware de roles. La
+interfaz visible no sustituye las restricciones del servidor: una accion
+solo debe considerarse exitosa cuando la API confirma el resultado.</p>
+<h2 id="mensajes-y-solucion-de-problemas">7. Mensajes y solucion de
+problemas</h2>
+<h3 id="la-pagina-no-carga">La pagina no carga</h3>
+<ol type="1">
+<li>Compruebe que el frontend este ejecutandose.</li>
+<li>Compruebe que la URL y el puerto sean correctos.</li>
+<li>Revise la consola del navegador y los registros del backend.</li>
+<li>Recargue la pagina despues de confirmar que ambos servicios estan
+activos.</li>
+</ol>
+<h3 id="no-se-muestran-casos-administrativos">No se muestran casos
+administrativos</h3>
+<ol type="1">
+<li>Confirme que inicio sesion con un usuario autorizado.</li>
+<li>Presione <strong>Actualizar</strong>.</li>
+<li>Revise si hay filtros activos y use la opcion para limpiarlos.</li>
+<li>Compruebe que el backend responda y que la base de datos tenga
+registros.</li>
+</ol>
+<h3 id="no-se-puede-enviar-un-formulario">No se puede enviar un
+formulario</h3>
+<ol type="1">
+<li>Revise los campos obligatorios.</li>
+<li>Compruebe los formatos de correo, telefono, fechas y
+documentos.</li>
+<li>Verifique que los archivos cumplan las restricciones del
+formulario.</li>
+<li>Evite recargar o enviar varias veces hasta confirmar el
+resultado.</li>
+</ol>
+<h3 id="el-enlace-de-finalizacion-no-funciona">El enlace de finalizacion
+no funciona</h3>
+<p>El enlace puede haber expirado, haber sido utilizado o estar
+incompleto. Solicite una nueva invitacion al equipo de revision. No
+reutilice enlaces recibidos anteriormente.</p>
+<h2 id="seguridad-y-proteccion-de-datos">8. Seguridad y proteccion de
+datos</h2>
+<ul>
+<li>Use unicamente los datos necesarios para atender el caso.</li>
+<li>No envie numeros de identificacion, documentos o tokens por canales
+publicos.</li>
+<li>Cierre la sesion al terminar una jornada de revision.</li>
+<li>No comparta cuentas administrativas.</li>
+<li>Verifique destinatarios antes de enviar una invitacion de
+finalizacion.</li>
+<li>No descargue o exporte listados en equipos compartidos sin
+autorizacion.</li>
+</ul>
+<h2 id="alcance-y-limitaciones-observadas">9. Alcance y limitaciones
+observadas</h2>
+<p>Este documento refleja la version capturada el 7 de septiembre de
+2026. La disponibilidad de listados, metricas, cambios de estado y
+envios depende de la API, la base de datos y el rol autenticado.</p>
+<p>Algunas rutas y formularios pueden estar en proceso de integracion.
+Si un enlace de navegacion lleva a una ruta distinta de la documentada,
+use la ruta visible en la barra del navegador y reportela al equipo de
+soporte para actualizar este manual.</p>
+<h2 id="soporte-y-reporte-de-incidentes">10. Soporte y reporte de
+incidentes</h2>
+<p>Para reportar un problema, incluya:</p>
+<ul>
+<li>Fecha y hora.</li>
+<li>Usuario o rol, sin incluir la contrasena.</li>
+<li>Ruta visitada.</li>
+<li>Accion realizada.</li>
+<li>Mensaje exacto mostrado.</li>
+<li>Captura sin datos personales visibles.</li>
+</ul>
+<p>El pie de pagina de la aplicacion muestra los canales de contacto
+disponibles para la organizacion.</p>
+<p>Para cualquier inquietud sobre este manual o el funcionamiento de la
+plataforma, contacte a:</p>
+<ul>
+<li><strong>Simon Torres Saldarriaga</strong></li>
+<li><strong>Correo:</strong> sitorress@unal.edu.co</li>
+<li><strong>Celular:</strong> 3127355474</li>
+</ul>
+<h2 id="glosario">11. Glosario</h2>
+<ul>
+<li><strong>Caso:</strong> registro de una solicitud en la
+plataforma.</li>
+<li><strong>Estado:</strong> etapa actual del caso.</li>
+<li><strong>Token:</strong> credencial temporal usada para autenticar
+una sesion o un enlace.</li>
+<li><strong>API:</strong> servicio del backend que recibe y entrega la
+informacion.</li>
+<li><strong>Rol:</strong> conjunto de permisos asignados a una
+cuenta.</li>
+<li><strong>CSV:</strong> archivo de texto que permite exportar
+registros tabulares.</li>
+<li><strong>Finalizacion:</strong> registro de la respuesta de cierre
+que cambia el caso a <code>finalizado</code>.</li>
+</ul>
+<h2 id="control-de-cambios-del-manual">12. Control de cambios del
+manual</h2>
+<p>Actualice este documento cuando se agregue o retire un formulario,
+cambien los estados, se modifiquen los roles o cambien las rutas
+publicas y administrativas. Las capturas deben renovarse cuando la
+interfaz cambie de forma visible.</p>
+</body>
+</html>
