@@ -15,6 +15,10 @@ RUN apk add --no-cache nginx libpng libjpeg-turbo freetype libzip icu-libs postg
 
 WORKDIR /var/www/html
 
+# Make Composer available at runtime as well, in case any startup/maintenance
+# command needs to invoke it (e.g. regenerating the autoloader).
+COPY --from=dependencies /usr/bin/composer /usr/bin/composer
+
 COPY --from=dependencies /app/vendor ./vendor
 COPY . .
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
