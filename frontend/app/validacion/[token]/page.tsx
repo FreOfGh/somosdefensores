@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { PARENTESCOS } from "@/lib/data/colombia";
 
-type Documento = { id: string; nombre: string; url: string };
+type Documento = { id: string; nombre: string; url: string; url_descarga?: string };
 type Caso = Record<string, unknown> & { estado: string };
 type MensajeHilo = { id: number; decision: string | null; comentarios: string | null; respuesta_revisor: string | null; responded_at: string | null; validador?: { name: string; email: string } | null };
 
@@ -168,7 +168,7 @@ export default function ValidacionCasoPage() {
                 <span className="min-w-0 flex-1 text-sm font-semibold capitalize text-black">{documento.nombre.replaceAll("_", " ")}</span>
                 <div className="flex shrink-0 gap-2">
                   <a href={documento.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-50"><ExternalLink className="h-3.5 w-3.5" />Abrir</a>
-                  <a href={documento.url} download className="inline-flex items-center gap-1.5 rounded-lg bg-[#92212a] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#701b20]"><Download className="h-3.5 w-3.5" />Descargar</a>
+                  <a href={documento.url_descarga ?? documento.url} className="inline-flex items-center gap-1.5 rounded-lg bg-[#92212a] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#701b20]"><Download className="h-3.5 w-3.5" />Descargar</a>
                 </div>
               </li>
             ))}

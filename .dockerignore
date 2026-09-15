@@ -1,0 +1,16 @@
+.env
+.git
+.github
+.idea
+.vscode
+manual
+**/node_modules
+**/vendor
+**/.next
+backend/storage/logs
+backend/storage/framework/cache
+backend/storage/framework/sessions
+backend/storage/framework/views
+backend/tests
+frontend/.env*
+*.md
