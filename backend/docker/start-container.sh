@@ -35,9 +35,13 @@ mkdir -p storage/app/public storage/framework/cache storage/framework/sessions s
 chown -R nginx:nginx storage bootstrap/cache
 
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
-    php artisan migrate --force --no-interaction
+    echo "Running database migrations..."
+    if ! php artisan migrate --force --no-interaction; then
+        echo "Migrations failed, continuing startup anyway so the app can report the error over HTTP" >&2
+    fi
 fi
 
+echo "Starting php-fpm..."
 php-fpm --nodaemonize &
 FPM_PID=$!
 
@@ -56,4 +60,5 @@ while [ ! -S /var/run/php-fpm/php-fpm.sock ]; do
     sleep 1
 done
 
+echo "php-fpm ready, starting nginx on port $PORT..."
 exec nginx -g 'daemon off;'
