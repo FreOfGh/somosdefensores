@@ -27,9 +27,6 @@ fi
 sed "s/__PORT__/$PORT/g" /etc/nginx/http.d/default.conf > /etc/nginx/http.d/default.conf.tmp
 mv /etc/nginx/http.d/default.conf.tmp /etc/nginx/http.d/default.conf
 
-mkdir -p /var/run/php-fpm
-chown nginx:nginx /var/run/php-fpm
-
 # storage/ (and any subpath mounted as a Railway volume) must stay writable by the php-fpm user.
 mkdir -p storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
 chown -R nginx:nginx storage bootstrap/cache
@@ -45,16 +42,16 @@ echo "Starting php-fpm..."
 php-fpm --nodaemonize &
 FPM_PID=$!
 
-# Give php-fpm a chance to create its socket before nginx starts proxying to it.
+# Give php-fpm a chance to start listening on 127.0.0.1:9000 before nginx starts proxying to it.
 i=0
-while [ ! -S /var/run/php-fpm/php-fpm.sock ]; do
+while ! nc -z 127.0.0.1 9000 2>/dev/null; do
     if ! kill -0 "$FPM_PID" 2>/dev/null; then
         echo "php-fpm exited before it was ready" >&2
         exit 1
     fi
     i=$((i + 1))
     if [ "$i" -ge 30 ]; then
-        echo "Timed out waiting for php-fpm socket" >&2
+        echo "Timed out waiting for php-fpm to listen on port 9000" >&2
         exit 1
     fi
     sleep 1

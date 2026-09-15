@@ -23,15 +23,11 @@ COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/php.ini /usr/local/etc/php/conf.d/railway.ini
 COPY docker/start-container.sh /usr/local/bin/start-container
 
-RUN mkdir -p /run/nginx /var/run/php-fpm \
+RUN mkdir -p /run/nginx \
     && sed -i 's!^user = .*!user = nginx!' /usr/local/etc/php-fpm.d/www.conf \
     && sed -i 's!^group = .*!group = nginx!' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's!^listen = .*!listen = /var/run/php-fpm/php-fpm.sock!' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's!^;listen.owner =.*!listen.owner = nginx!' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's!^;listen.group =.*!listen.group = nginx!' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's!^;listen.mode =.*!listen.mode = 0660!' /usr/local/etc/php-fpm.d/www.conf \
     && sed -i 's!^;clear_env =.*!clear_env = no!' /usr/local/etc/php-fpm.d/www.conf \
-    && chown -R nginx:nginx storage bootstrap/cache /var/run/php-fpm \
+    && chown -R nginx:nginx storage bootstrap/cache \
     && chmod +x /usr/local/bin/start-container
 
 ENV APP_ENV=production \
