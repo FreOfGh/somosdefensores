@@ -30,13 +30,30 @@ mv /etc/nginx/http.d/default.conf.tmp /etc/nginx/http.d/default.conf
 mkdir -p /var/run/php-fpm
 chown nginx:nginx /var/run/php-fpm
 
-# storage/app/public should be a mounted volume in production; a fresh mount is owned by root.
-mkdir -p storage/app/public
-chown -R nginx:nginx storage/app/public
+# storage/ (and any subpath mounted as a Railway volume) must stay writable by the php-fpm user.
+mkdir -p storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
+chown -R nginx:nginx storage bootstrap/cache
 
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     php artisan migrate --force --no-interaction
 fi
 
-php-fpm -D
+php-fpm --nodaemonize &
+FPM_PID=$!
+
+# Give php-fpm a chance to create its socket before nginx starts proxying to it.
+i=0
+while [ ! -S /var/run/php-fpm/php-fpm.sock ]; do
+    if ! kill -0 "$FPM_PID" 2>/dev/null; then
+        echo "php-fpm exited before it was ready" >&2
+        exit 1
+    fi
+    i=$((i + 1))
+    if [ "$i" -ge 30 ]; then
+        echo "Timed out waiting for php-fpm socket" >&2
+        exit 1
+    fi
+    sleep 1
+done
+
 exec nginx -g 'daemon off;'
