@@ -17,7 +17,8 @@ WORKDIR /var/www/html
 
 COPY --from=dependencies /app/vendor ./vendor
 COPY . .
-RUN php artisan package:discover --ansi
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && php artisan package:discover --ansi
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/php.ini /usr/local/etc/php/conf.d/railway.ini
 COPY docker/start-container.sh /usr/local/bin/start-container
