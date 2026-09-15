@@ -30,6 +30,10 @@ mv /etc/nginx/http.d/default.conf.tmp /etc/nginx/http.d/default.conf
 mkdir -p /var/run/php-fpm
 chown nginx:nginx /var/run/php-fpm
 
+# storage/app/public should be a mounted volume in production; a fresh mount is owned by root.
+mkdir -p storage/app/public
+chown -R nginx:nginx storage/app/public
+
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     php artisan migrate --force --no-interaction
 fi

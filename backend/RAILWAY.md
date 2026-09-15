@@ -18,3 +18,9 @@ No defina `DB_PASSWORD` con un valor escrito en el repositorio. Use la referenci
 El contenedor solo publica Nginx en el puerto `PORT` asignado por Railway. PHP-FPM usa un socket Unix interno y no queda expuesto en red. Nginx permite cargas de hasta 100 MB.
 
 Tras la primera migracion, cambie `RUN_MIGRATIONS` a `false` para que las migraciones se ejecuten desde un proceso de despliegue controlado.
+
+## Persistencia de los documentos adjuntos
+
+El sistema de archivos del contenedor es efimero: cualquier archivo subido a `storage/app/public` se pierde en cada redeploy o reinicio si no se configura un volumen. Esto provoca error 404 al intentar abrir o descargar documentos que fueron subidos antes del ultimo despliegue.
+
+Para evitar esto, cree un **Volume** en Railway para el servicio de la aplicacion y montelo en la ruta `/var/www/html/storage/app/public`. El script de arranque ajusta automaticamente los permisos de esa ruta (propietario `nginx`) en cada inicio, incluso si el volumen se monta como `root`.

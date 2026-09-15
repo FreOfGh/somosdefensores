@@ -332,23 +332,58 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
     }
 
     if (campo === "agresiones") {
-      const lista = Array.isArray(dato) ? (dato as Record<string, unknown>[]) : [];
+      const lista = Array.isArray(dato) ? (dato as Record<string, string>[]) : [];
+      const bloqueado = esFinal;
+      const actualizarAgresion = (indice: number, campoAgresion: string, valor: string) => {
+        setCaso({ ...caso, agresiones: lista.map((agresion, posicion) => (posicion === indice ? { ...agresion, [campoAgresion]: valor } : agresion)) });
+      };
+      const eliminarAgresion = (indice: number) => setCaso({ ...caso, agresiones: lista.filter((_, posicion) => posicion !== indice) });
+      const agregarAgresion = () => setCaso({ ...caso, agresiones: [...lista, { fecha_ocurrencia: "", departamento: "", municipio: "", vereda_comunidad: "", resguardo: "", modalidad: "", descripcion: "", motivos: "", presunto_responsable: "" }] });
+      const camposAgresion: { campo: string; etiqueta: string; largo?: boolean; tipo?: string }[] = [
+        { campo: "fecha_ocurrencia", etiqueta: "Fecha de ocurrencia", tipo: "date" },
+        { campo: "departamento", etiqueta: "Departamento" },
+        { campo: "municipio", etiqueta: "Municipio" },
+        { campo: "vereda_comunidad", etiqueta: "Vereda y/o comunidad" },
+        { campo: "resguardo", etiqueta: "Consejo comunitario / resguardo" },
+        { campo: "modalidad", etiqueta: "Modalidad de agresión" },
+        { campo: "descripcion", etiqueta: "Descripción", largo: true },
+        { campo: "motivos", etiqueta: "Motivos", largo: true },
+        { campo: "presunto_responsable", etiqueta: "Presunto responsable", largo: true },
+      ];
       return (
         <div key={campo} className="text-sm font-semibold text-black md:col-span-2">
           {mostrarNombre(campo)}
           <div className="mt-2 space-y-3">
             {lista.length === 0 && <span className="block rounded-lg bg-gray-100 px-3 py-2 text-xs font-normal text-gray-500">Sin registrar</span>}
             {lista.map((agresion, indice) => (
-              <div key={indice} className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs font-normal text-black">
-                <p className="text-xs font-bold text-[#92212a]">Agresi\u00f3n {indice + 1}</p>
-                <p className="mt-1">Fecha: {valorCampo("fecha_ocurrencia", agresion.fecha_ocurrencia) || "Sin registrar"}</p>
-                <p>Lugar: {[agresion.departamento, agresion.municipio, agresion.vereda_comunidad].filter(Boolean).join(", ") || "Sin registrar"}</p>
-                <p>Modalidad: {valorCampo("modalidad", agresion.modalidad) || "Sin registrar"}</p>
-                <p>Descripci\u00f3n: {valorCampo("descripcion", agresion.descripcion) || "Sin registrar"}</p>
-                <p>Motivos: {valorCampo("motivos", agresion.motivos) || "Sin registrar"}</p>
-                <p>Presunto responsable: {valorCampo("presunto_responsable", agresion.presunto_responsable) || "Sin registrar"}</p>
+              <div key={indice} className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-xs font-bold text-[#92212a]">Agresión {indice + 1}</p>
+                  {!bloqueado && (
+                    <button type="button" onClick={() => eliminarAgresion(indice)} className="rounded-lg border border-red-200 px-2 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-50">
+                      Quitar
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  {camposAgresion.map(({ campo: campoAgresion, etiqueta, largo, tipo }) => (
+                    <label key={campoAgresion} className={`block text-xs font-semibold text-black ${largo ? "md:col-span-2" : ""}`}>
+                      {etiqueta}
+                      {largo ? (
+                        <textarea value={agresion[campoAgresion] ?? ""} onChange={(event) => actualizarAgresion(indice, campoAgresion, event.target.value)} rows={3} disabled={bloqueado} className={claseInput} />
+                      ) : (
+                        <input type={tipo ?? "text"} value={agresion[campoAgresion] ?? ""} onChange={(event) => actualizarAgresion(indice, campoAgresion, event.target.value)} disabled={bloqueado} className={claseInput} />
+                      )}
+                    </label>
+                  ))}
+                </div>
               </div>
             ))}
+            {!bloqueado && (
+              <button type="button" onClick={agregarAgresion} className="rounded-lg border border-[#92212a] px-3 py-2 text-xs font-semibold text-[#92212a] transition hover:bg-[#92212a]/5">
+                + Agregar agresión
+              </button>
+            )}
           </div>
         </div>
       );
