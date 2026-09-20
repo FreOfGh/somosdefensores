@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Reportes públicos en tiempo real</title>
+  <desc id="desc">Panel visual con gráficos y datos para consultar reportes públicos.</desc>
+  <rect width="1200" height="760" fill="#172936"/>
+  <rect x="75" y="78" width="1050" height="604" rx="8" fill="#f7f3ed"/>
+  <rect x="75" y="78" width="1050" height="78" rx="8" fill="#a82d35"/>
+  <circle cx="119" cy="117" r="10" fill="#f6d8b1"/><circle cx="153" cy="117" r="10" fill="#f6d8b1"/><circle cx="187" cy="117" r="10" fill="#f6d8b1"/>
+  <rect x="235" y="104" width="370" height="27" rx="13" fill="#c8615d"/>
+  <rect x="120" y="203" width="440" height="194" fill="#fff" stroke="#d8d2c9" stroke-width="3"/>
+  <path d="M158 347h365M158 310h365M158 273h365M158 236h365" stroke="#d8d2c9" stroke-width="3"/>
+  <path d="m170 342 58-44 58 22 65-72 61 35 78-72" fill="none" stroke="#a82d35" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#a82d35"><circle cx="170" cy="342" r="7"/><circle cx="228" cy="298" r="7"/><circle cx="286" cy="320" r="7"/><circle cx="351" cy="248" r="7"/><circle cx="412" cy="283" r="7"/><circle cx="490" cy="211" r="7"/></g>
+  <rect x="610" y="203" width="440" height="194" fill="#fff" stroke="#d8d2c9" stroke-width="3"/>
+  <circle cx="830" cy="300" r="70" fill="none" stroke="#d8d2c9" stroke-width="28"/>
+  <path d="M830 230a70 70 0 0 1 61 105" fill="none" stroke="#a82d35" stroke-width="28"/>
+  <path d="M830 230a70 70 0 0 0-61 105" fill="none" stroke="#e6ae5d" stroke-width="28"/>
+  <rect x="120" y="445" width="930" height="184" fill="#fff" stroke="#d8d2c9" stroke-width="3"/>
+  <rect x="160" y="485" width="180" height="20" rx="10" fill="#253d4b"/><rect x="160" y="525" width="770" height="13" rx="6" fill="#d8d2c9"/><rect x="160" y="565" width="640" height="13" rx="6" fill="#d8d2c9"/>
+  <rect x="870" y="480" width="132" height="72" rx="6" fill="#f0d6ae"/><path d="M895 532h82M895 515h56M895 498h30" stroke="#a82d35" stroke-width="9" stroke-linecap="round"/>
+</svg>

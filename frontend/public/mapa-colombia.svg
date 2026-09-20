@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 760" role="img" aria-labelledby="title desc">
+  <title id="title">Mapa de Colombia</title>
+  <desc id="desc">Mapa estilizado de Colombia con sus departamentos representados por áreas de color.</desc>
+  <defs><linearGradient id="map" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a82d35"/><stop offset="1" stop-color="#d47757"/></linearGradient></defs>
+  <path fill="url(#map)" stroke="#fff" stroke-width="5" d="M267 28 323 48 351 83 394 92 421 123 468 126 498 164 485 200 525 232 510 274 533 314 514 350 522 398 489 429 499 478 469 502 448 551 411 564 390 610 355 636 330 688 296 676 274 713 244 688 204 702 182 668 143 662 132 623 94 604 104 559 75 530 92 488 67 454 99 421 85 380 110 348 91 311 123 280 113 235 145 211 141 170 175 149 180 108 217 91 226 56Z"/>
+  <path d="m181 149 80 64 89-18 84 72-64 68 20 91-89 54-76-65-81 22m206-242 24 99-34 79 57 87m-137-76 78-18 82 68 91-1m-99-304 31 85 55 28m-158 212 58-57 98 6" fill="none" stroke="#f5d9c2" stroke-width="3" opacity=".9"/>
+  <g fill="#fff"><circle cx="232" cy="185" r="6"/><circle cx="326" cy="214" r="6"/><circle cx="413" cy="275" r="6"/><circle cx="267" cy="365" r="6"/><circle cx="372" cy="445" r="6"/><circle cx="188" cy="510" r="6"/><circle cx="322" cy="590" r="6"/></g>
+</svg>

@@ -14,6 +14,7 @@ use App\Http\Controllers\FinalizacionCasoController;
 use App\Http\Controllers\SeguimientoCasoController;
 use App\Http\Controllers\ValidacionCasoController;
 use App\Http\Controllers\AdminMetricasController;
+use App\Http\Controllers\Publico\MapasController;
 use \App\Http\Controllers\admin\ajustes\usuarios;
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -30,6 +31,12 @@ Route::get('/user', function (Request $request) {
 
 
 Route::prefix('publico')->group(function () {
+    Route::prefix('mapas')->group(function () {
+        Route::get('/departamentos', [MapasController::class, 'departamentos']);
+        Route::get('/municipios', [MapasController::class, 'municipios']);
+        Route::get('/departamentos/{departamento}/municipios', [MapasController::class, 'municipiosPorDepartamento']);
+    });
+
     Route::get('/finalizacion/{token}', [FinalizacionCasoController::class, 'validar']);
     Route::post('/finalizacion/{token}', [FinalizacionCasoController::class, 'finalizar']);
     Route::get('/seguimiento/{token}', [SeguimientoCasoController::class, 'validar']);

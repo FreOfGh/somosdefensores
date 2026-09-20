@@ -1,14 +1,18 @@
-import Image from "next/image";
-import Metricas from "@/app/components/home/metricas";
-import { branding } from "@/lib/data/rutas";
 import Navbar from "./components/casos/navbar";
-import SeleccionFormulario from "./components/home/formcard";
 import Footer from "./components/casos/footer";
+import Hero from "./components/home/hero";
+import ReportesPublicos from "./components/home/reportes-publicos";
+import ImpactoNacional from "./components/home/impacto-nacional";
+
 export default function Home() {
   return (
-    <div className=" bg-zinc-50 font-sans">
+    <div className="bg-[#f3eee7] font-sans">
       <Navbar />
-      <SeleccionFormulario />
+      <main>
+        <Hero />
+        <ReportesPublicos />
+        <ImpactoNacional />
+      </main>
       <Footer />
     </div>
   );
