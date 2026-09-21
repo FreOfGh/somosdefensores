@@ -15,7 +15,7 @@ const slides = homeHeroSlides;
 
 const FullScreenHero = () => {
   return (
-    <section className="group relative min-h-[680px] w-full overflow-hidden bg-slate-950">
+    <section className="group relative h-[calc(100svh-76px)] min-h-[620px] w-full overflow-hidden bg-slate-950">
 
       {/* BOTONES DE NAVEGACIÓN PERSONALIZADOS */}
       <button className="swiper-prev absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 bg-white/10 hover:bg-white/20 backdrop-blur-md p-2 sm:p-3 rounded-full text-white transition-all opacity-0 group-hover:opacity-100 hidden md:block">
@@ -38,7 +38,7 @@ const FullScreenHero = () => {
         className="h-full w-full"
       >
         {slides.map((slide, index) => (
-          <SwiperSlide key={slide.title} className="relative min-h-[680px] overflow-hidden">
+          <SwiperSlide key={slide.title} className="relative h-full min-h-[620px] overflow-hidden">
 
             {/* IMAGEN CON ZOOM LENTO */}
             <div className="absolute inset-0 animate-slow-zoom">

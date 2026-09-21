@@ -65,6 +65,50 @@ class MapasController extends Controller
         return $this->featureCollection($features);
     }
 
+    public function agresiones(): JsonResponse
+    {
+        $agresiones = "
+            SELECT LOWER(TRIM(agresion->>'departamento')) AS departamento,
+                   LOWER(TRIM(agresion->>'municipio')) AS municipio,
+                   COUNT(*)::int AS total
+            FROM (
+                SELECT agresiones::jsonb AS agresiones FROM ayuda_humanitaria WHERE deleted_at IS NULL
+                UNION ALL
+                SELECT agresiones::jsonb AS agresiones FROM pasantia WHERE deleted_at IS NULL
+            ) AS casos
+            CROSS JOIN LATERAL jsonb_array_elements(
+                CASE WHEN jsonb_typeof(casos.agresiones) = 'array' THEN casos.agresiones ELSE '[]'::jsonb END
+            ) AS agresion
+            WHERE NULLIF(TRIM(agresion->>'departamento'), '') IS NOT NULL
+              AND NULLIF(TRIM(agresion->>'municipio'), '') IS NOT NULL
+            GROUP BY LOWER(TRIM(agresion->>'departamento')), LOWER(TRIM(agresion->>'municipio'))
+        ";
+
+        $features = DB::table('municipios_geometrias AS municipios')
+            ->leftJoinSub(DB::query()->fromRaw("({$agresiones}) AS conteos"), 'conteos', function ($join) {
+                $join->on(DB::raw('LOWER(TRIM(municipios.departamento))'), '=', 'conteos.departamento')
+                    ->on(DB::raw('LOWER(TRIM(municipios.nombre))'), '=', 'conteos.municipio');
+            })
+            ->select('municipios.departamento', 'municipios.nombre', 'municipios.properties')
+            ->selectRaw('COALESCE(conteos.total, 0)::int AS agresiones')
+            ->selectRaw('ST_AsGeoJSON(municipios.geom)::json AS geometry')
+            ->orderByDesc('agresiones')
+            ->orderBy('municipios.departamento')
+            ->orderBy('municipios.nombre')
+            ->get()
+            ->map(fn ($municipality) => [
+                'type' => 'Feature',
+                'geometry' => is_string($municipality->geometry) ? json_decode($municipality->geometry, true) : $municipality->geometry,
+                'properties' => [
+                    'departamento' => $municipality->departamento,
+                    'nombre' => $municipality->nombre,
+                    'agresiones' => (int) $municipality->agresiones,
+                ],
+            ]);
+
+        return $this->featureCollection($features);
+    }
+
     private function featureCollection($features): JsonResponse
     {
         return response()->json([

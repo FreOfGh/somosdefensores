@@ -66,6 +66,7 @@ export interface Agresion {
   descripcion: string;
   motivos: string;
   presunto_responsable: string;
+  presunto_responsable_descripcion: string;
 }
 
 export interface DocumentosAdjuntos {

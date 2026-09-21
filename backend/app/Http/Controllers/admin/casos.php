@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use App\Support\CatalogoResolver;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 class casos extends Controller
 {
@@ -47,49 +49,51 @@ class casos extends Controller
         {
             $agresiones = json_decode($request->input('agresiones', '[]'), true);
             $request->merge(['agresiones' => is_array($agresiones) ? $agresiones : null]);
+            $this->normalizarCatalogosIndividual($request);
 
             $reglas = [
                 'fecha_remision' => ['required', 'date'],
                 'nombre_apellidos' => ['required', 'string', 'max:255'],
-                'tipo_documento' => ['required', 'string', 'max:20'],
+                'tipo_documento' => ['required', 'uuid', 'exists:catalogo_tipos_documento,id'],
                 'cedula' => ['required', 'regex:/^\d+$/', 'max:20', 'unique:' . (new $modelo)->getTable() . ',numero_identificacion'],
                 'edad' => ['required', 'integer', 'min:0', 'max:100'],
-                'genero' => ['required', 'string', 'max:50'],
+                'genero' => ['required', 'uuid', 'exists:catalogo_generos,id'],
                 'telefono' => ['required', 'regex:/^\d+$/', 'max:20'],
                 'correo' => ['required', 'email', 'max:255'],
-                'procedencia_departamento' => ['required', 'string', 'max:255'],
-                'procedencia_municipio' => ['required', 'string', 'max:255'],
+                'procedencia_departamento' => ['required', 'uuid', 'exists:catalogo_departamentos,id'],
+                'procedencia_municipio' => ['required', 'uuid', 'exists:catalogo_municipios,id'],
                 'procedencia_vereda_comunidad' => ['nullable', 'string', 'max:255'],
                 'procedencia_resguardo' => ['nullable', 'string', 'max:255'],
-                'residencia_departamento' => ['required', 'string', 'max:255'],
-                'residencia_municipio' => ['required', 'string', 'max:255'],
+                'residencia_departamento' => ['required', 'uuid', 'exists:catalogo_departamentos,id'],
+                'residencia_municipio' => ['required', 'uuid', 'exists:catalogo_municipios,id'],
                 'residencia_vereda_comunidad' => ['nullable', 'string', 'max:255'],
                 'residencia_resguardo' => ['nullable', 'string', 'max:255'],
                 'agresiones' => ['required', 'array', 'min:1'],
                 'agresiones.*.fecha_ocurrencia' => ['required', 'date'],
-                'agresiones.*.departamento' => ['required', 'string', 'max:255'],
-                'agresiones.*.municipio' => ['required', 'string', 'max:255'],
+                'agresiones.*.departamento' => ['required', 'uuid', 'exists:catalogo_departamentos,id'],
+                'agresiones.*.municipio' => ['required', 'uuid', 'exists:catalogo_municipios,id'],
                 'agresiones.*.vereda_comunidad' => ['nullable', 'string', 'max:255'],
                 'agresiones.*.resguardo' => ['nullable', 'string', 'max:255'],
-                'agresiones.*.modalidad' => ['required', 'string'],
+                'agresiones.*.modalidad' => ['required', 'uuid', 'exists:catalogo_modalidades_agresion,id'],
                 'agresiones.*.descripcion' => ['required', 'string'],
                 'agresiones.*.motivos' => ['required', 'string'],
                 'agresiones.*.presunto_responsable' => ['required', 'string'],
-                'grupo_etnico' => ['nullable', 'string', 'max:100'],
-                'tiene_discapacidad' => ['nullable', 'string', 'max:10'],
+                'agresiones.*.presunto_responsable_descripcion' => ['nullable', 'string'],
+                'grupo_etnico' => ['nullable', 'uuid', 'exists:catalogo_grupos_poblacionales,id'],
+                'tiene_discapacidad' => ['nullable', 'uuid', 'exists:catalogo_respuestas_binarias,id'],
                 'cual_discapacidad' => ['nullable', 'string'],
-                'tiene_condicion_salud' => ['nullable', 'string', 'max:10'],
+                'tiene_condicion_salud' => ['nullable', 'uuid', 'exists:catalogo_respuestas_binarias,id'],
                 'cual_condicion_salud' => ['nullable', 'string'],
                 'nombre_organizacion' => ['required', 'string', 'max:255'],
-                'tipo_liderazgo' => ['required', 'string', 'max:255'],
+                'tipo_liderazgo' => ['required', 'uuid', 'exists:catalogo_tipo_liderazgo,id'],
                 'tipo_liderazgo_otro' => ['nullable', 'string', 'max:255'],
                 'organizacion_remite' => ['required', 'string', 'max:255'],
                 'persona_organizacion_nombre' => ['nullable', 'string', 'max:255'],
                 'persona_organizacion_correo' => ['nullable', 'email', 'max:255'],
                 'persona_organizacion_celular' => ['nullable', 'string', 'max:50'],
-                'estado_civil' => ['nullable', 'string', 'max:100'],
+                'estado_civil' => ['nullable', 'uuid', 'exists:catalogo_estados_civiles,id'],
                 'otra_composicion_familiar' => ['nullable', 'string'],
-                'tiene_hijos' => ['nullable', 'string', 'max:10'],
+                'tiene_hijos' => ['nullable', 'uuid', 'exists:catalogo_respuestas_binarias,id'],
                 'numero_hijos' => ['nullable', 'integer', 'min:0', 'max:99'],
                 'edades_hijos' => ['nullable', 'json'],
                 'personas_conviven' => ['nullable', 'json'],
@@ -103,7 +107,7 @@ class casos extends Controller
             ];
 
             if ($esPasantia) {
-                $reglas['tipo_pasantia'] = ['required', 'string', 'max:255'];
+                $reglas['tipo_pasantia'] = ['required', 'uuid', 'exists:catalogo_tipo_pasantia,id'];
 
                 if (($request->input('tipo_pasantia') ?? '') !== 'internacional') {
                     $reglas['carta_aceptacion_pasantia'] = [
@@ -161,6 +165,64 @@ class casos extends Controller
             $this->notificarRevisores($esPasantia ? 'pasantía' : 'ayuda humanitaria');
 
             return response()->json($caso, 201);
+        }
+
+        private function normalizarCatalogosIndividual(Request $request): void
+        {
+            $campos = [
+                'tipo_documento' => 'catalogo_tipos_documento',
+                'genero' => 'catalogo_generos',
+                'grupo_etnico' => 'catalogo_grupos_poblacionales',
+                'tiene_discapacidad' => 'catalogo_respuestas_binarias',
+                'tiene_condicion_salud' => 'catalogo_respuestas_binarias',
+                'procedencia_departamento' => 'catalogo_departamentos',
+                'procedencia_municipio' => 'catalogo_municipios',
+                'residencia_departamento' => 'catalogo_departamentos',
+                'residencia_municipio' => 'catalogo_municipios',
+                'tipo_liderazgo' => 'catalogo_tipo_liderazgo',
+                'estado_civil' => 'catalogo_estados_civiles',
+                'tiene_hijos' => 'catalogo_respuestas_binarias',
+                'tipo_pasantia' => 'catalogo_tipo_pasantia',
+            ];
+
+            foreach ($campos as $campo => $tabla) {
+                $valor = $request->input($campo);
+                if (!$valor || preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', (string) $valor)) {
+                    continue;
+                }
+
+                $consulta = DB::table($tabla)->whereRaw('LOWER(nombre) = LOWER(?)', [$valor]);
+                if ($tabla !== 'catalogo_municipios') {
+                    $consulta->orWhereRaw('LOWER(codigo) = LOWER(?)', [$valor]);
+                }
+                $id = $consulta->value('id');
+                if ($id) {
+                    $request->merge([$campo => $id]);
+                }
+            }
+
+            $agresiones = $request->input('agresiones');
+            if (!is_array($agresiones)) {
+                return;
+            }
+
+            $agresiones = array_map(function (array $agresion): array {
+                foreach (['departamento' => 'catalogo_departamentos', 'municipio' => 'catalogo_municipios', 'modalidad' => 'catalogo_modalidades_agresion'] as $campo => $tabla) {
+                    $valor = $agresion[$campo] ?? null;
+                    if (!$valor || preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', (string) $valor)) {
+                        continue;
+                    }
+                    $consulta = DB::table($tabla)->whereRaw('LOWER(nombre) = LOWER(?)', [$valor]);
+                    if ($tabla !== 'catalogo_municipios') {
+                        $consulta->orWhereRaw('LOWER(codigo) = LOWER(?)', [$valor]);
+                    }
+                    $id = $consulta->value('id');
+                    if ($id) $agresion[$campo] = $id;
+                }
+                return $agresion;
+            }, $agresiones);
+
+            $request->merge(['agresiones' => $agresiones]);
         }
 
         private function notificarRevisores(string $tipoCaso): void
@@ -336,6 +398,11 @@ class casos extends Controller
                     foreach ($casos as $caso) {
                         fputcsv($salida, $camposSeleccionados->map(function ($campo) use ($caso) {
                             $valor = $caso->{$campo};
+                            if ($campo === 'agresiones' && is_array($valor)) {
+                                $valor = array_map([CatalogoResolver::class, 'resolverAgresion'], $valor);
+                            } else {
+                                $valor = CatalogoResolver::resolver($campo, $valor);
+                            }
                             if (is_array($valor)) return json_encode($valor, JSON_UNESCAPED_UNICODE);
                             if ($valor instanceof \DateTimeInterface) return $valor->format('Y-m-d H:i');
                             return $valor ?? '';
@@ -391,10 +458,15 @@ class casos extends Controller
                 ->orderBy($campo)
                 ->limit(200)
                 ->pluck($campo)
+                ->values();
+
+            $opciones = $valores
+                ->map(fn ($valor) => ['valor' => $valor, 'etiqueta' => CatalogoResolver::resolver($campo, $valor)])
+                ->sortBy('etiqueta')
                 ->values()
                 ->all();
 
-            return response()->json($valores);
+            return response()->json($opciones);
         }
 
         public function datosGrafico(Request $request, $tipoCaso){
@@ -431,17 +503,27 @@ class casos extends Controller
                 : "coalesce(nullif({$columna}::text, ''), 'Sin registrar')";
 
             if ($cruces->isNotEmpty()) {
-                $expresionSerie = $cruces->map(fn ($campoDeSerie) => $expresion($campoDeSerie))->implode(" || ' / ' || ");
+                $columnasCruce = $cruces->values()->map(fn ($campoDeSerie, $indice) => $expresion($campoDeSerie) . " as cruce{$indice}")->implode(', ');
+                $gruposPorPosicion = implode(', ', range(1, $cruces->count() + 1));
 
-                $filas = $query->selectRaw($expresion($campo) . ' as categoria, ' . $expresionSerie . ' as serie, count(*) as total')
-                    ->groupByRaw('1, 2')
+                $filas = $query->selectRaw($expresion($campo) . ' as categoria, ' . $columnasCruce . ', count(*) as total')
+                    ->groupByRaw($gruposPorPosicion)
                     ->orderBy('categoria')
                     ->get();
+
+                $cruceCampos = $cruces->values()->all();
+                $filas = $filas->map(function ($fila) use ($campo, $cruceCampos) {
+                    $fila->categoria = CatalogoResolver::resolver($campo, $fila->categoria);
+                    $fila->serie = collect($cruceCampos)
+                        ->map(fn ($campoDeSerie, $indice) => CatalogoResolver::resolver($campoDeSerie, $fila->{"cruce{$indice}"}))
+                        ->implode(' / ');
+                    return $fila;
+                });
 
                 $series = $filas->pluck('serie')->unique()->values()->all();
                 $datos = $filas->groupBy('categoria')->map(fn ($grupo, $categoria) => array_merge(
                     ['categoria' => $categoria],
-                    collect($series)->mapWithKeys(fn ($serie) => [$serie => (int) ($grupo->firstWhere('serie', $serie)->total ?? 0)])->all()
+                    collect($series)->mapWithKeys(fn ($serie) => [$serie => (int) $grupo->filter(fn ($fila) => $fila->serie === $serie)->sum('total')])->all()
                 ))->values()->all();
 
                 return response()->json(['datos' => $datos, 'series' => $series]);
@@ -452,7 +534,11 @@ class casos extends Controller
                 ->orderByDesc('total')
                 ->limit(30)
                 ->get()
-                ->map(fn ($fila) => ['categoria' => $fila->categoria, 'total' => (int) $fila->total])
+                ->map(fn ($fila) => ['categoria' => CatalogoResolver::resolver($campo, $fila->categoria), 'total' => (int) $fila->total])
+                ->groupBy('categoria')
+                ->map(fn ($grupo, $categoria) => ['categoria' => $categoria, 'total' => (int) $grupo->sum('total')])
+                ->sortByDesc('total')
+                ->values()
                 ->all();
 
             return response()->json(['datos' => $datos, 'series' => ['total']]);

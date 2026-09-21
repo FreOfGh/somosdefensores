@@ -44,7 +44,8 @@ function visible(campo: string, valor: unknown): string {
     return lista
       .map((agresion, indice) => {
         const lugar = [agresion.departamento, agresion.municipio, agresion.vereda_comunidad].filter(Boolean).join(", ");
-        return `Agresión ${indice + 1} - Fecha: ${agresion.fecha_ocurrencia ?? "Sin registrar"} | Lugar: ${lugar || "Sin registrar"} | Modalidad: ${agresion.modalidad ?? "Sin registrar"} | Descripción: ${agresion.descripcion ?? "Sin registrar"} | Motivos: ${agresion.motivos ?? "Sin registrar"} | Presunto responsable: ${agresion.presunto_responsable ?? "Sin registrar"}`;
+        const descripcionResponsable = agresion.presunto_responsable_descripcion ? ` (${agresion.presunto_responsable_descripcion})` : "";
+        return `Agresión ${indice + 1} - Fecha: ${agresion.fecha_ocurrencia ?? "Sin registrar"} | Lugar: ${lugar || "Sin registrar"} | Modalidad: ${agresion.modalidad ?? "Sin registrar"} | Descripción: ${agresion.descripcion ?? "Sin registrar"} | Motivos: ${agresion.motivos ?? "Sin registrar"} | Presunto responsable: ${agresion.presunto_responsable ?? "Sin registrar"}${descripcionResponsable}`;
       })
       .join("\n\n");
   }

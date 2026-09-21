@@ -15,6 +15,7 @@ import PasoEntrevistaInicial from "./paso1";
 import PasoRemisionSolicitud from "./paso2";
 import PasoInformacionCaso from "./paso3";
 import PasoDocumentos from "./paso4";
+import { useCatalogo } from "@/hooks/use-catalogo";
 
 interface FormularioProteccionIndividualPageProps {
   tipoFormulario?: "ayuda_humanitaria" | "pasantia";
@@ -24,6 +25,7 @@ export default function FormularioProteccionIndividualPage({
   tipoFormulario = "ayuda_humanitaria",
 }: FormularioProteccionIndividualPageProps) {
   const esPasantia = tipoFormulario === "pasantia";
+  const tiposPasantia = useCatalogo("tipos-pasantia", esPasantia);
   const [formulario, setFormulario] = useState<FormularioProteccionIndividual>(
     formularioProteccionIndividualInicial
   );
@@ -42,6 +44,7 @@ export default function FormularioProteccionIndividualPage({
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [errores, setErrores] = useState<Record<string, string>>({});
+  const esPasantiaInternacional = tiposPasantia.opciones.some((item) => item.id === formulario.tipo_pasantia && item.codigo === "INTERNACIONAL");
 
   const actualizarCampo = (
     campo: keyof FormularioProteccionIndividual,
@@ -198,7 +201,7 @@ export default function FormularioProteccionIndividualPage({
           "La certificación de cuenta bancaria es obligatoria.";
       if (
         esPasantia &&
-        formulario.tipo_pasantia !== "internacional" &&
+        !esPasantiaInternacional &&
         !documentos.carta_aceptacion_pasantia
       )
         nuevosErrores.carta_aceptacion_pasantia =
@@ -245,7 +248,7 @@ export default function FormularioProteccionIndividualPage({
       setMensaje("");
       await enviarProteccionIndividual(formularioEnvio, documentos, tipoFormulario);
       setMensaje(
-        "La solicitud de protección individual fue enviada correctamente."
+        "La solicitud de ayuda humanitaria fue enviada correctamente."
       );
       setFormulario(formularioProteccionIndividualInicial);
       setDocumentos(documentosProteccionIndividualIniciales);
@@ -267,23 +270,16 @@ export default function FormularioProteccionIndividualPage({
     <div className="min-h-screen bg-[#f5f5f5] px-4 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
         <div className="mb-8 text-center">
-          <motion.div
-            initial={{ scale: 0.7, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 14 }}
-            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#8e2329] text-2xl text-white shadow-lg shadow-[#8e2329]/30"
-          >
-            🛡️
-          </motion.div>
+
 
           <h1 className="text-2xl font-bold text-[#8e2329] md:text-3xl">
-            {esPasantia ? "Solicitud de pasantía" : "Solicitud de Apoyo de Protección Individual"}
+            {esPasantia ? "Solicitud de pasantía" : "Solicitud de ayuda humanitaria"}
           </h1>
 
           <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-gray-600">
             {esPasantia
               ? "Complete la información requerida para realizar la solicitud de pasantía."
-              : "Complete la información requerida para realizar la solicitud de apoyo de protección individual."}
+              : "Complete la información requerida para realizar la solicitud de ayuda humanitaria."}
           </p>
         </div>
 
@@ -404,7 +400,7 @@ export default function FormularioProteccionIndividualPage({
 
           <p className="mt-2 text-sm leading-6 text-gray-600">
             La información suministrada en este formulario será utilizada
-            para la gestión de la solicitud de protección individual.
+            para la gestión de la solicitud de ayuda humanitaria.
             Procure proporcionar información clara y veraz y adjuntar
             únicamente los documentos pertinentes.
           </p>

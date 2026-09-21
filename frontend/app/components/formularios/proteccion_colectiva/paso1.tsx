@@ -1,5 +1,7 @@
 import { FormularioProteccionColectiva } from "@/types/formularios/proteccion-colectiva.types";
 import CampoTexto from "@/app/components/formularios/shared/campo-texto";
+import CampoSelect from "@/app/components/formularios/shared/campo-select";
+import { useCatalogo, useUbicaciones } from "@/hooks/use-catalogo";
 
 interface Paso1Props {
   formulario: FormularioProteccionColectiva;
@@ -14,6 +16,8 @@ export default function PasoInformacionGeneral({
   onCampoChange,
   onSiguiente,
 }: Paso1Props) {
+  const representantes = useCatalogo("tipos-representante");
+  const ubicaciones = useUbicaciones(formulario.departamento);
   return (
     <div className="space-y-6">
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-[#fefbfb] shadow-sm">
@@ -135,18 +139,12 @@ export default function PasoInformacionGeneral({
               Cargo o condición de representación
             </label>
 
-            <select
+            <CampoSelect
+              label="Cargo o condición de representación"
               value={formulario.representante_tipo}
-              onChange={(e) => onCampoChange("representante_tipo", e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-black outline-none focus:border-[#8e2329] focus:ring-2 focus:ring-[#8e2329]/20"
-            >
-              <option value="">Seleccione una opción</option>
-              <option value="representante_legal">Representante legal</option>
-              <option value="director">Director/a</option>
-              <option value="persona_autorizada">Persona autorizada</option>
-              <option value="coordinador">Coordinador/a</option>
-              <option value="asamblea">Asamblea o equivalente</option>
-            </select>
+              onChange={(value) => onCampoChange("representante_tipo", value)}
+              opciones={representantes.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
+            />
           </div>
 
           <CampoTexto
@@ -185,20 +183,20 @@ export default function PasoInformacionGeneral({
             </h3>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              <CampoTexto
+              <CampoSelect
                 label="Departamento(s)"
                 value={formulario.departamento}
-                onChange={(v) => onCampoChange("departamento", v)}
-                placeholder="Departamento"
+                onChange={(v) => { onCampoChange("departamento", v); onCampoChange("municipio", ""); }}
+                opciones={ubicaciones.departamentos.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
                 required
                 error={errores.departamento}
               />
 
-              <CampoTexto
+              <CampoSelect
                 label="Municipio(s)"
                 value={formulario.municipio}
                 onChange={(v) => onCampoChange("municipio", v)}
-                placeholder="Municipio"
+                opciones={ubicaciones.municipios.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
                 required
                 error={errores.municipio}
               />

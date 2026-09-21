@@ -3,6 +3,7 @@ import {
   FormularioProteccionIndividual,
 } from "@/types/formularios/proteccion-individual.types";
 import CampoArchivo from "@/app/components/formularios/shared/campo-archivo";
+import { useCatalogo } from "@/hooks/use-catalogo";
 
 type CampoArchivoMultiple =
   | "evidencias_soportes"
@@ -38,6 +39,8 @@ export default function PasoDocumentos({
   onVolver,
   enviando,
 }: PasoDocumentosProps) {
+  const tiposPasantia = useCatalogo("tipos-pasantia", Boolean(formulario.tipo_pasantia));
+  const requiereCartaPasantia = Boolean(formulario.tipo_pasantia) && !tiposPasantia.opciones.some((item) => item.id === formulario.tipo_pasantia && item.codigo === "INTERNACIONAL");
   return (
     <div className="space-y-6">
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-[#fefbfb] shadow-sm">
@@ -84,7 +87,7 @@ export default function PasoDocumentos({
             }
           />
 
-          {formulario.tipo_pasantia && formulario.tipo_pasantia !== "internacional" && (
+          {requiereCartaPasantia && (
             <CampoArchivo
               label="4. Carta de aceptación de la pasantía"
               descripcion="Carta de aceptación emitida por la institución donde se realizará la pasantía."

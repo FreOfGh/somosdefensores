@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -19,17 +20,30 @@ class AuthController extends Controller
             'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $user = User::query()->where('email', $credentials['email'])->first();
+        $superEmail = config('auth.super_user.email');
+        $superPassword = config('auth.super_user.password');
+        $esSuperUsuario = $superEmail && hash_equals(strtolower($superEmail), strtolower($credentials['email']));
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        if ($esSuperUsuario && $superPassword && hash_equals($superPassword, $credentials['password'])) {
+            Role::firstOrCreate(['name' => 'super usuario', 'guard_name' => 'web']);
+            $user = User::query()->firstOrNew(['email' => $superEmail]);
+            $user->name = $user->name ?: 'Superusuario';
+            $user->password = $superPassword;
+            $user->save();
+            $user->syncRoles(['super usuario']);
+        } else {
+            $user = User::query()->where('email', $credentials['email'])->first();
+        }
+
+        if (! $esSuperUsuario && (! $user || ! Hash::check($credentials['password'], $user->password))) {
             throw ValidationException::withMessages([
                 'email' => 'Credenciales invalidas.',
             ]);
         }
 
-        if (! $user->hasAnyRole(['revisor', 'equipo revision de casos'])) {
+        if (! $user->hasAnyRole(['revisor', 'equipo revision de casos', 'super usuario'])) {
             throw ValidationException::withMessages([
-                'email' => 'Solo los usuarios con rol revisor pueden iniciar sesión.',
+                'email' => 'El usuario no tiene permisos para iniciar sesión.',
             ]);
         }
 

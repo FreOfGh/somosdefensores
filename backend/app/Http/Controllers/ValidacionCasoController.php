@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
+use App\Support\CatalogoResolver;
 
 class ValidacionCasoController extends Controller
 {
@@ -330,8 +331,8 @@ class ValidacionCasoController extends Controller
     {
         if ($valor === null || $valor === '') return '';
         if ($campo === 'agresiones' && is_array($valor)) {
-            return collect($valor)->map(fn ($agresion, $indice) => sprintf(
-                "Agresión %d\nFecha: %s | Lugar: %s\nModalidad: %s\nDescripción: %s\nMotivos: %s\nPresunto responsable: %s",
+            return collect($valor)->map(fn ($agresion) => CatalogoResolver::resolverAgresion($agresion))->map(fn ($agresion, $indice) => sprintf(
+                "Agresión %d\nFecha: %s | Lugar: %s\nModalidad: %s\nDescripción: %s\nMotivos: %s\nPresunto responsable: %s%s",
                 $indice + 1,
                 $agresion['fecha_ocurrencia'] ?? 'Sin registrar',
                 collect([$agresion['departamento'] ?? null, $agresion['municipio'] ?? null, $agresion['vereda_comunidad'] ?? null])->filter()->implode(', ') ?: 'Sin registrar',
@@ -339,14 +340,29 @@ class ValidacionCasoController extends Controller
                 $agresion['descripcion'] ?? 'Sin registrar',
                 $agresion['motivos'] ?? 'Sin registrar',
                 $agresion['presunto_responsable'] ?? 'Sin registrar',
+                !empty($agresion['presunto_responsable_descripcion']) ? "\nDescripción del presunto responsable: " . $agresion['presunto_responsable_descripcion'] : '',
             ))->implode("\n\n");
         }
         if ($campo === 'personas_conviven' && is_array($valor)) {
             return collect($valor)->pluck('parentesco')->filter()->implode(', ');
         }
+        $valor = CatalogoResolver::resolver($campo, $valor);
         if (is_bool($valor)) return $valor ? 'Sí' : 'No';
         if (is_array($valor)) return json_encode($valor, JSON_UNESCAPED_UNICODE);
         return (string) $valor;
+    }
+
+    /**
+     * Valida que el valor recibido sea una imagen PNG/JPEG en formato data-URL antes de incrustarla en el PDF.
+     */
+    private function imagenMapaValida(mixed $valor): ?string
+    {
+        if (!is_string($valor) || $valor === '') return null;
+        if (!preg_match('/^data:image\/(png|jpe?g);base64,[A-Za-z0-9+\/]+=*$/', $valor)) return null;
+        // Límite de ~5 MB en base64 para evitar cargas excesivas en el generador de PDF.
+        if (strlen($valor) > 5 * 1024 * 1024) return null;
+
+        return $valor;
     }
 
     public function exportarPdf(Request $request, string $tipoCaso, string $casoId)
@@ -403,6 +419,8 @@ class ValidacionCasoController extends Controller
             default => 'Caso',
         };
 
+        $imagenMapa = $this->imagenMapaValida($request->input('imagen_mapa'));
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.caso', [
             'tituloTipo' => $tituloTipo,
             'nombreCaso' => $nombreCaso,
@@ -413,6 +431,7 @@ class ValidacionCasoController extends Controller
             'incluirConversaciones' => $incluirConversaciones,
             'conversaciones' => $conversaciones,
             'logoPath' => public_path('images/logo-somos-defensores.png'),
+            'imagenMapa' => $imagenMapa,
         ])->setPaper('a4');
 
         $nombreArchivo = 'caso_' . \Illuminate\Support\Str::slug($nombreCaso ?: $casoId) . '.pdf';

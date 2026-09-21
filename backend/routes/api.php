@@ -15,6 +15,7 @@ use App\Http\Controllers\SeguimientoCasoController;
 use App\Http\Controllers\ValidacionCasoController;
 use App\Http\Controllers\AdminMetricasController;
 use App\Http\Controllers\Publico\MapasController;
+use App\Http\Controllers\Publico\CatalogosController;
 use \App\Http\Controllers\admin\ajustes\usuarios;
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -31,9 +32,15 @@ Route::get('/user', function (Request $request) {
 
 
 Route::prefix('publico')->group(function () {
+    Route::get('/catalogos/departamentos', [CatalogosController::class, 'departamentos']);
+    Route::get('/catalogos/municipios', [CatalogosController::class, 'todosMunicipios']);
+    Route::get('/catalogos/departamentos/{departamento}/municipios', [CatalogosController::class, 'municipios']);
+    Route::get('/catalogos/{catalogo}', [CatalogosController::class, 'show']);
+
     Route::prefix('mapas')->group(function () {
         Route::get('/departamentos', [MapasController::class, 'departamentos']);
         Route::get('/municipios', [MapasController::class, 'municipios']);
+        Route::get('/agresiones', [MapasController::class, 'agresiones']);
         Route::get('/departamentos/{departamento}/municipios', [MapasController::class, 'municipiosPorDepartamento']);
     });
 
@@ -67,6 +74,7 @@ Route::prefix('publico')->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:revisor|equipo revision de casos'])->prefix('admin')->group(function () {
     Route::get('/dashboard/metricas', [AdminMetricasController::class, 'index']);
+    Route::get('/dashboard/agresiones-ubicacion', [AdminMetricasController::class, 'agresionesPorUbicacion']);
     Route::get('/listar/humanitaria', [casos::class, 'listar_todas_las_ayudas_humanitarias']);
     Route::get('/listar/pasantia', [casos::class, 'listar_todas_las_pasantias']);
     Route::get('/humanitaria/{id}', [casos::class, 'obtener_ayuda_humanitaria']);
@@ -93,13 +101,20 @@ Route::middleware(['auth:sanctum', 'role:revisor|equipo revision de casos'])->pr
         });
     });
 
-    Route::prefix('usuarios')->group(function () {
+});
+
+Route::middleware(['auth:sanctum', 'role:revisor|equipo revision de casos|super usuario'])->patch('/admin/mi-contrasena', [usuarios::class, 'cambiarMiContrasena']);
+
+Route::middleware(['auth:sanctum', 'role:super usuario'])->prefix('admin/gestion-usuarios')->group(function () {
         Route::post('/crear', [usuarios::class, 'crear_usuario']);
-        Route::get('/consultar', [usuarios::class, 'obtener_correo_rol']);
+        Route::post('/catalogos/opciones', [usuarios::class, 'agregarCatalogo']);
+        Route::get('/catalogos/opciones', [usuarios::class, 'listarCatalogo']);
+        Route::patch('/catalogos/opciones/{id}', [usuarios::class, 'editarCatalogo']);
+        Route::delete('/catalogos/opciones/{id}', [usuarios::class, 'eliminarCatalogo']);
         Route::get('/', [usuarios::class, 'listar_usuarios']);
+        Route::patch('/{usuario}', [usuarios::class, 'editar_usuario']);
         Route::patch('/{usuario}/contrasena', [usuarios::class, 'actualizar_contrasena']);
         Route::delete('/{usuario}', [usuarios::class, 'eliminar_usuario']);
-    });
 });
 
 Route::middleware(['auth:sanctum', 'role:revisor|equipo revision de casos'])->prefix('admin/casos')->group(function () {
@@ -121,6 +136,7 @@ Route::middleware(['auth:sanctum', 'role:revisor|equipo revision de casos'])->pr
     Route::post('/{tipoCaso}/{casoId}/seguimiento/enlace', [SeguimientoCasoController::class, 'enlace']);
     Route::get('/{tipoCaso}/{casoId}/seguimiento', [SeguimientoCasoController::class, 'respuestas']);
     Route::get('/{tipoCaso}/{casoId}/pdf', [ValidacionCasoController::class, 'exportarPdf']);
+    Route::post('/{tipoCaso}/{casoId}/pdf', [ValidacionCasoController::class, 'exportarPdf']);
     Route::post('/{tipoCaso}/{casoId}/iniciar-validacion', [ValidacionCasoController::class, 'iniciar']);
     Route::get('/{tipoCaso}/{casoId}/validaciones', [ValidacionCasoController::class, 'historial']);
     Route::post('/validaciones/{invitacionId}/responder', [ValidacionCasoController::class, 'responderValidador']);

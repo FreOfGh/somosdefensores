@@ -28,6 +28,7 @@ interface GraficoDinamicoProps {
 type CampoGraficable = { campo: string; etiqueta: string };
 type Punto = { categoria: string; [serie: string]: string | number };
 type Filtro = { id: string; campo: string; valor: string };
+type OpcionValor = { valor: string; etiqueta: string };
 
 const COLORES = ["#92212a", "#ed5a0b", "#2563eb", "#059669", "#7c3aed", "#db2777", "#ca8a04", "#0891b2", "#4b5563", "#65a30d"];
 const MAX_CRUCES = 3;
@@ -38,7 +39,7 @@ export default function GraficoDinamico({ tipoCaso, titulo = "Gráfico dinámico
   const [campo, setCampo] = useState("");
   const [cruces, setCruces] = useState<string[]>([]);
   const [filtros, setFiltros] = useState<Filtro[]>([]);
-  const [valoresPorCampo, setValoresPorCampo] = useState<Record<string, string[]>>({});
+  const [valoresPorCampo, setValoresPorCampo] = useState<Record<string, OpcionValor[]>>({});
   const [tipoGrafico, setTipoGrafico] = useState<TipoGrafico>("barras");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
@@ -69,7 +70,10 @@ export default function GraficoDinamico({ tipoCaso, titulo = "Gráfico dinámico
       const respuesta = await adminFetch(`/api/admin/graficos/${tipoCaso}/valores?campo=${encodeURIComponent(campoValor)}`);
       const lista = await respuesta.json();
       if (!respuesta.ok) throw new Error(lista.message || "No fue posible cargar los valores.");
-      setValoresPorCampo((actual) => ({ ...actual, [campoValor]: Array.isArray(lista) ? lista.map(String) : [] }));
+      setValoresPorCampo((actual) => ({
+        ...actual,
+        [campoValor]: Array.isArray(lista) ? lista.map((item: OpcionValor | string) => (typeof item === "string" ? { valor: item, etiqueta: item } : item)) : [],
+      }));
     } catch (error) {
       setMensaje(error instanceof Error ? error.message : "No fue posible cargar los valores.");
     }
@@ -216,7 +220,7 @@ export default function GraficoDinamico({ tipoCaso, titulo = "Gráfico dinámico
                   </select>
                   <select value={filtro.valor} onChange={(e) => actualizarFiltro(filtro.id, { valor: e.target.value })} className={`${claseSelect} flex-1 min-w-[160px]`}>
                     <option value="">Seleccione un valor</option>
-                    {(valoresPorCampo[filtro.campo] ?? []).map((valor) => <option key={valor} value={valor}>{valor}</option>)}
+                    {(valoresPorCampo[filtro.campo] ?? []).map((opcion) => <option key={opcion.valor} value={opcion.valor}>{opcion.etiqueta}</option>)}
                   </select>
                   <button type="button" onClick={() => eliminarFiltro(filtro.id)} className="rounded-lg border border-gray-300 bg-white px-2.5 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50">
                     Quitar

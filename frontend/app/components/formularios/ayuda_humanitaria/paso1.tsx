@@ -5,7 +5,7 @@ import CampoSelect from "@/app/components/formularios/shared/campo-select";
 import CamposUbicacion, {
   CampoUbicacion,
 } from "@/app/components/formularios/shared/campos-ubicacion";
-import { PARENTESCOS, TIPOS_DOCUMENTO_IDENTIDAD } from "@/lib/data/colombia";
+import { useCatalogo } from "@/hooks/use-catalogo";
 
 interface PersonaConvive {
   parentesco: string;
@@ -41,6 +41,13 @@ export default function PasoEntrevistaInicial({
   onSiguiente,
   esPasantia = false,
 }: Paso1Props) {
+  const tiposDocumento = useCatalogo("tipos-documento");
+  const generos = useCatalogo("generos");
+  const gruposPoblacionales = useCatalogo("grupos-poblacionales");
+  const tiposLiderazgo = useCatalogo("tipos-liderazgo");
+  const estadosCiviles = useCatalogo("estados-civiles");
+  const parentescos = useCatalogo("parentescos");
+  const tiposPasantia = useCatalogo("tipos-pasantia", esPasantia);
   const onUbicacionChange = (campo: CampoUbicacion, valor: string) => {
     onCampoChange(campo as keyof FormularioProteccionIndividual, valor);
   };
@@ -96,7 +103,7 @@ export default function PasoEntrevistaInicial({
               label="Tipo de documento"
               value={formulario.tipo_documento}
               onChange={(v) => onCampoChange("tipo_documento", v)}
-              opciones={TIPOS_DOCUMENTO_IDENTIDAD}
+              opciones={tiposDocumento.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
               required
               error={errores.tipo_documento}
             />
@@ -128,13 +135,7 @@ export default function PasoEntrevistaInicial({
             onChange={(v) => onCampoChange("genero", v)}
             required
             error={errores.genero}
-            opciones={[
-              { value: "F", label: "Femenino" },
-              { value: "M", label: "Masculino" },
-              { value: "LGBTIQ+", label: "LGBTIQ+ / OSIGD" },
-              { value: "otro", label: "Otro" },
-              { value: "no_responde", label: "Prefiero no responder" },
-            ]}
+            opciones={generos.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
           />
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -163,20 +164,7 @@ export default function PasoEntrevistaInicial({
             label="Grupo étnico y/o poblacional"
             value={formulario.grupo_etnico}
             onChange={(v) => onCampoChange("grupo_etnico", v)}
-            opciones={[
-              { value: "indigena", label: "Indígena" },
-              { value: "afrodescendiente", label: "Afrodescendiente" },
-              { value: "afrocolombiano", label: "Afrocolombiano/a" },
-              { value: "campesino", label: "Campesino/a" },
-              { value: "adulto_mayor", label: "Adulto Mayor" },
-              { value: "mujeres", label: "Mujeres" },
-              { value: "lgbiq_osigd", label: "Lgbiq+/OSIGD" },
-              { value: "raizal", label: "Raizal" },
-              { value: "palenquero", label: "Palenquero/a" },
-              { value: "rom", label: "Rrom / Gitano" },
-              { value: "ninguno", label: "Ninguno" },
-              { value: "no_responde", label: "Prefiero no responder" },
-            ]}
+            opciones={gruposPoblacionales.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
           />
 
           <CampoTexto
@@ -194,29 +182,10 @@ export default function PasoEntrevistaInicial({
             onChange={(v) => onCampoChange("tipo_liderazgo", v)}
             required
             error={errores.tipo_liderazgo}
-            opciones={[
-              { value: "comunal", label: "Comunal" },
-              { value: "comunitario", label: "Comunitario" },
-              { value: "campesino", label: "Campesino" },
-              {
-                value: "defensoras_derechos_mujeres",
-                label: "Defensoras de los derechos de las mujeres",
-              },
-              { value: "afrodescendiente", label: "Afrodescendiente" },
-              { value: "indigena", label: "Indígena" },
-              { value: "sindical", label: "Sindical" },
-              { value: "ambiental", label: "Ambiental" },
-              { value: "liderazgo_victimas", label: "Liderazgo de víctimas" },
-              { value: "lgtbi", label: "LGTBI" },
-              { value: "juvenil", label: "Juvenil" },
-              { value: "estudiantil", label: "Estudiantil" },
-              { value: "activista_ddhh", label: "Activista de DD.HH" },
-              { value: "mujer_buscadora", label: "Mujer buscadora" },
-              { value: "otro", label: "Otro (debe describirlo)" },
-            ]}
+            opciones={tiposLiderazgo.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
           />
 
-          {formulario.tipo_liderazgo === "otro" && (
+          {tiposLiderazgo.opciones.some((item) => item.id === formulario.tipo_liderazgo && item.codigo === "OTRO") && (
             <CampoTexto
               label="Especifique el tipo de liderazgo o derechos que defiende"
               value={formulario.tipo_liderazgo_otro}
@@ -331,18 +300,10 @@ export default function PasoEntrevistaInicial({
               label="Estado civil"
               value={formulario.estado_civil}
               onChange={(v) => onCampoChange("estado_civil", v)}
-              opciones={[
-                { value: "soltero", label: "Soltero/a" },
-                { value: "casado", label: "Casado/a" },
-                { value: "union_libre", label: "Unión libre" },
-                { value: "separado", label: "Separado/a" },
-                { value: "divorciado", label: "Divorciado/a" },
-                { value: "viudo", label: "Viudo/a" },
-                { value: "otra", label: "Otra" },
-              ]}
+              opciones={estadosCiviles.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
             />
 
-            {formulario.estado_civil === "otra" && (
+            {estadosCiviles.opciones.some((item) => item.id === formulario.estado_civil && item.codigo === "OTRO") && (
               <div className="mt-4">
                 <CampoTexto
                   label="Especifique"
@@ -476,7 +437,7 @@ export default function PasoEntrevistaInicial({
                         label="Parentesco"
                         value={persona.parentesco}
                         onChange={(v) => actualizarParentesco(indice, v)}
-                        opciones={PARENTESCOS}
+                        opciones={parentescos.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
                       />
                     </div>
 
@@ -547,10 +508,7 @@ export default function PasoEntrevistaInicial({
               onChange={(v) => onCampoChange("tipo_pasantia", v)}
               required
               error={errores.tipo_pasantia}
-              opciones={[
-                { value: "nacional", label: "Nacional" },
-                { value: "internacional", label: "Internacional" },
-              ]}
+              opciones={tiposPasantia.opciones.map((item) => ({ value: item.id, label: item.nombre }))}
             />
           )}
         </div>

@@ -1,22 +1,36 @@
 // Información de contacto y redes sociales
 
-import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa6";
+import { FaFacebook, FaInstagram, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 
 const informacionContactoDesarrollador = [
   {
-    nombre: "Simón Torres S",
+    nombre: "Simón Torres Saldarriaga",
     valor: "sitorress@unal.edu.co",
     whatsapp: "https://wa.me/573127355474",
   }
 ];
+const contactoInstitucional = {
+  direccion: "Transversal 26B # 40A-86, barrio La Soledad, Bogotá D.C. - Colombia",
+  telefonos: "(057 1) 2814010 - 2813048",
+  correos: [
+    "proteccion@somosdefensores.org",
+    "responsablesistema@somosdefensores.org",
+    "comunicaciones@somosdefensores.org",
+  ],
+};
+const politicasInstitucionales = [
+  { nombre: "Política de privacidad", href: "/politicas#privacidad" },
+  { nombre: "Tratamiento de datos personales", href: "/politicas#tratamiento-de-datos" },
+  { nombre: "Términos de uso", href: "/politicas#terminos-de-uso" },
+];
 const redesSocialesSomosDefensores = [
   {
     nombre: "Facebook",
-    url: "https://www.facebook.com/somosdefensores",
+    url: "https://www.facebook.com/somosdef",
   },
   {
-    nombre: "Twitter",
-    url: "https://twitter.com/somosdefensores",
+    nombre: "X",
+    url: "https://x.com/SomosDef",
   },
   {
     nombre: "Instagram",
@@ -37,7 +51,7 @@ const metaDataAdministrador = {
 };
 const iconosRedes = {
   Facebook: FaFacebook,
-  Twitter: FaTwitter,
+  X: FaXTwitter,
   Instagram: FaInstagram,
   Whatsapp: FaWhatsapp,
 };
@@ -45,25 +59,25 @@ const iconosRedes = {
 const slidesHero= [
   {
     id: 1,
-    image: '/foto1.jpeg',
+    image: '/hero1.jpeg',
     title: 'Consulta',
     subtitle: 'Pública',
     desc: 'Accede en tiempo real a las métricas disponibles, con reportes dinámicos y mapas de calor.'
   },
   {
     id: 2,
-    image: '/foto2.jpeg',
+    image: '/hero2.jpeg',
     title: 'Campaña',
     subtitle: 'imprescindibles.',
     desc: '.'
   },
   {
     id: 3,
-    image: '/foto3.jpeg',
+    image: '/hero3.jpeg',
     title: 'El derecho a',
     subtitle: 'Defender derechos',
     desc: 'Para la protección de los defensores de derechos humanos dentro de su labor.'
   }
 ];
 
-export { informacionContactoDesarrollador,metaDataSeccionFormularios, redesSocialesSomosDefensores, slidesHero, iconosRedes, metaDataAdministrador };
+export { contactoInstitucional, informacionContactoDesarrollador, metaDataSeccionFormularios, politicasInstitucionales, redesSocialesSomosDefensores, slidesHero, iconosRedes, metaDataAdministrador };

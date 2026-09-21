@@ -7,6 +7,7 @@ use App\Models\ProteccionColectiva;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 
 class ProteccionColectivaController extends Controller
 {
@@ -31,6 +32,7 @@ class ProteccionColectivaController extends Controller
 
     public function store(Request $request)
     {
+        $this->normalizarCatalogos($request);
         $datos = $request->validate($this->reglasFormulario());
         $solicitud = ProteccionColectiva::create($this->construirDatosCaso($datos));
 
@@ -51,6 +53,32 @@ class ProteccionColectivaController extends Controller
             'message' => 'Solicitud de protección colectiva creada correctamente.',
             'data' => $solicitud,
         ], 201);
+    }
+
+    private function normalizarCatalogos(Request $request): void
+    {
+        $campos = [
+            'representante_tipo' => 'catalogo_tipo_representante',
+            'departamento' => 'catalogo_departamentos',
+            'municipio' => 'catalogo_municipios',
+        ];
+
+        foreach ($campos as $campo => $tabla) {
+            $valor = $request->input($campo);
+            if (!$valor || preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', (string) $valor)) continue;
+            $consulta = DB::table($tabla)->whereRaw('LOWER(nombre) = LOWER(?)', [$valor]);
+            if ($tabla !== 'catalogo_municipios') {
+                $consulta->orWhereRaw('LOWER(codigo) = LOWER(?)', [$valor]);
+            }
+            $id = $consulta->value('id');
+            if ($id) $request->merge([$campo => $id]);
+        }
+
+        $personeria = $request->input('tiene_personeria_juridica');
+        if ($personeria !== null && !preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', (string) $personeria)) {
+            $codigo = filter_var($personeria, FILTER_VALIDATE_BOOLEAN) ? 'SI' : 'NO';
+            $request->merge(['tiene_personeria_juridica' => DB::table('catalogo_respuestas_binarias')->where('codigo', $codigo)->value('id')]);
+        }
     }
 
     public function update(Request $request, string $id)
@@ -148,17 +176,17 @@ class ProteccionColectivaController extends Controller
     {
         return [
             'fecha_remision_caso' => ['required', 'date'],
-            'tiene_personeria_juridica' => ['required', 'boolean'],
+            'tiene_personeria_juridica' => ['required', 'uuid', 'exists:catalogo_respuestas_binarias,id'],
             'rut' => ['nullable', 'string', 'max:100'],
             'nombre_organizacion' => ['required', 'string', 'max:255'],
             'representante_nombre' => ['required', 'string', 'max:255'],
             'representante_apellido' => ['required', 'string', 'max:255'],
-            'representante_tipo' => ['nullable', 'string', 'max:100'],
+            'representante_tipo' => ['nullable', 'uuid', 'exists:catalogo_tipo_representante,id'],
             'cedula' => ['required', 'string', 'max:100'],
             'telefono' => ['required', 'string', 'max:50'],
             'correo' => ['required', 'email', 'max:255'],
-            'departamento' => ['required', 'string', 'max:255'],
-            'municipio' => ['required', 'string', 'max:255'],
+            'departamento' => ['required', 'uuid', 'exists:catalogo_departamentos,id'],
+            'municipio' => ['required', 'uuid', 'exists:catalogo_municipios,id'],
             'vereda' => ['nullable', 'string', 'max:255'],
             'descripcion_organizacion' => ['required', 'string'],
             'estructura_organizacion' => ['nullable', 'string'],

@@ -6,7 +6,6 @@ const adminNavItems = [
   { name: "Ayuda humanitaria", href: "/admin/ayuda_humanitaria", id:"ayuda_humanitaria" },
   { name: "Pasantía", href: "/admin/pasantias", id:"pasantia" },
   { name: "Protección colectiva", href: "/admin/proteccion_colectiva", id:"proteccion_colectiva" },
-  { name: "Usuarios", href: "/admin/usuarios", id:"usuarios" },
 ];
 
   const navLinks = [
@@ -26,19 +25,19 @@ const branding= {
 
 const homeHeroSlides = [
   {
-    image: "/hero-consulta.svg",
+    image: "/hero3.png",
     eyebrow: "Información pública",
     title: "Conocer para proteger",
     description: "Consulta datos y reportes que ayudan a comprender las realidades de quienes defienden los derechos humanos.",
   },
   {
-    image: "/hero-acompanamiento.svg",
+    image: "/hero1.jpg",
     eyebrow: "Acompañamiento",
     title: "Nadie defiende en soledad",
     description: "Conectamos historias, solicitudes y rutas de atención para fortalecer respuestas oportunas.",
   },
   {
-    image: "/hero-comunidad.svg",
+    image: "/hero2.png",
     eyebrow: "Acción colectiva",
     title: "La defensa es un derecho",
     description: "Registra tu caso y haz visible la realidad de las comunidades que sostienen la vida y la democracia.",
@@ -48,7 +47,7 @@ const homeHeroSlides = [
 const impactMap = "/mapa-colombia.svg";
 
 const publicReportsSection = {
-  image: "/reportes-publicos.svg",
+  image: "/data.jpg",
   href: "/reportes",
   eyebrow: "Datos abiertos",
   title: "Accede a nuestros reportes públicos en tiempo real",
@@ -76,4 +75,31 @@ const formOptions = [
   },
 ] as const;
 
-export { adminNavItems, navItems, branding, navLinks, homeHeroSlides, impactMap, publicReportsSection, formOptions }
+const publicReports = [
+  {
+    id: "distribucion-territorial",
+    category: "Territorio",
+    title: "Distribución territorial de casos",
+    description: "Vista de prueba sobre la distribución de casos registrados por departamento y municipio.",
+    updatedAt: "Datos de demostración",
+    href: "/geografia-publica",
+  },
+  {
+    id: "tendencias-mensuales",
+    category: "Tendencias",
+    title: "Tendencias mensuales",
+    description: "Resumen de prueba para observar variaciones en el registro de casos a lo largo del tiempo.",
+    updatedAt: "Datos de demostración",
+    href: "#",
+  },
+  {
+    id: "caracterizacion-casos",
+    category: "Caracterización",
+    title: "Caracterización de casos",
+    description: "Reporte de prueba con variables generales sobre las personas, organizaciones y comunidades registradas.",
+    updatedAt: "Datos de demostración",
+    href: "#",
+  },
+] as const;
+
+export { adminNavItems, navItems, branding, navLinks, homeHeroSlides, impactMap, publicReportsSection, formOptions, publicReports }

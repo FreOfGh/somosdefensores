@@ -5,8 +5,8 @@ import { publicReportsSection } from "@/lib/data/rutas";
 
 export default function ReportesPublicos() {
   return (
-    <section className="bg-[#172936] px-4 py-16 text-white sm:px-6 lg:px-8 lg:py-24">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
+    <section className="flex min-h-screen items-center bg-[#172936] px-4 py-16 text-white sm:px-6 lg:px-8 lg:py-24">
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
         <div className="order-2 lg:order-1">
           <div className="mb-6 inline-flex items-center gap-2 text-[#e5b15e]">
             <BarChart3 size={20} aria-hidden="true" />

@@ -2,10 +2,10 @@
 
 ## Plataforma de registro y seguimiento de casos sociales
 
-**Version documentada:** 7 de septiembre de 2026  
+**Version documentada:** 20 de septiembre de 2026  
 **Aplicacion:** Casos Sociales / Somos Defensores  
-**Creado por:** Simon Torres Saldarriaga  
-**Contacto:** sitorress@unal.edu.co | Celular: 3127355474  
+**Desarrollado de forma independiente por:** Simon Torres Saldarriaga  
+**Contacto institucional:** proteccion@somosdefensores.org | responsablesistema@somosdefensores.org | comunicaciones@somosdefensores.org  
 **Audiencia:** personas solicitantes, equipos de validacion y equipos de revision
 
 Este manual explica como utilizar la version actual de la plataforma. Las capturas se tomaron con el frontend ejecutandose en `http://localhost:3000`; los datos que aparecen en listados administrativos dependen de la conexion con la API y de los permisos del usuario.
@@ -253,6 +253,51 @@ Adjunte la certificacion de cuenta bancaria y el documento de identidad, que son
 La plataforma utiliza la misma estructura de captura de informacion personal que ayuda humanitaria, pero el caso queda clasificado como pasantia.
 
 Si una opcion del formulario no esta disponible o la pantalla muestra un error, registre la incidencia con la fecha, la ruta visitada y el mensaje mostrado. No vuelva a enviar varias veces la misma solicitud sin confirmar primero si el registro fue creado.
+
+### 3.6 Fuente publica de datos
+
+La ruta `/reportes` presenta la **Fuente publica de datos**. Esta seccion contiene reportes de demostracion mientras se habilita la publicacion de los informes oficiales.
+
+Actualmente se muestran:
+
+- **Distribucion territorial de casos:** enlaza al visor geografico.
+- **Tendencias mensuales:** tarjeta de demostracion, disponible proximamente.
+- **Caracterizacion de casos:** tarjeta de demostracion, disponible proximamente.
+
+Las tarjetas marcadas como **Demo** no deben interpretarse como estadisticas oficiales. Cuando se publique un reporte, revise su fecha de actualizacion, cobertura y notas metodologicas antes de utilizarlo.
+
+### 3.7 Reporte geografico de casos
+
+La ruta `/geografia-publica` ofrece un visor de mapas alimentado por la API publica y las geometrias almacenadas en PostGIS.
+
+**Seleccionar una vista:**
+
+1. Elija **Departamentos** para consultar la division territorial nacional.
+2. Elija **Municipios** para mostrar todos los municipios disponibles.
+3. Elija **Por departamento** y seleccione un departamento en la lista para consultar sus municipios.
+
+En la vista de departamentos puede hacer clic sobre cualquier departamento. El visor cambia automaticamente a la vista de sus municipios. El nombre del territorio bajo el cursor aparece en la esquina superior derecha del mapa.
+
+Al seleccionar un municipio se abre un modal con su nombre, departamento y un resumen de prueba. Ese resumen es provisional y sera reemplazado por informacion estadistica publica cuando el modulo de reportes este disponible.
+
+**Descargas del visor:**
+
+- **PDF:** se habilita al seleccionar un departamento o municipio y descarga un resumen territorial de prueba.
+- **CSV:** aparece como control reservado para una futura descarga y no ejecuta ninguna accion por ahora.
+
+Si el mapa no carga, compruebe que el backend este disponible, que `NEXT_PUBLIC_API_URL` apunte a la API correcta y que las tablas geograficas hayan sido migradas.
+
+### 3.8 Pie de pagina, contacto y politicas
+
+El pie de pagina identifica a Somos Defensores, contiene los enlaces oficiales de Facebook, Instagram y X, y presenta el contacto institucional:
+
+- **Direccion:** Transversal 26B # 40A-86, barrio La Soledad, Bogota D.C. - Colombia.
+- **Telefonos:** (057 1) 2814010 - 2813048.
+- **Correos:** proteccion@somosdefensores.org, responsablesistema@somosdefensores.org y comunicaciones@somosdefensores.org.
+
+La seccion **Politicas institucionales** enlaza a `/politicas` y contiene los apartados de privacidad, tratamiento de datos personales y terminos de uso. Los textos visibles actualmente indican cuando un documento se encuentra en actualizacion.
+
+La atribucion de desarrollo independiente aparece de forma discreta al final del pie de pagina. Simon Torres Saldarriaga no hace parte de Somos Defensores.
 
 ## 4. Acceso administrativo
 
@@ -538,7 +583,7 @@ El enlace puede haber expirado, haber sido utilizado o estar incompleto. Solicit
 
 Este documento refleja la version capturada el 7 de septiembre de 2026. La disponibilidad de listados, metricas, cambios de estado y envios depende de la API, la base de datos y el rol autenticado.
 
-Algunas rutas y formularios pueden estar en proceso de integracion. Si un enlace de navegacion lleva a una ruta distinta de la documentada, use la ruta visible en la barra del navegador y reportela al equipo de soporte para actualizar este manual.
+Algunas rutas y formularios pueden estar en proceso de integracion. Los reportes de la fuente publica, el resumen del modal municipal y la descarga PDF del visor son demostraciones y no representan datos oficiales hasta que se publique la informacion correspondiente. Si un enlace de navegacion lleva a una ruta distinta de la documentada, use la ruta visible en la barra del navegador y reportela al equipo de soporte para actualizar este manual.
 
 ## 10. Soporte y reporte de incidentes
 
@@ -553,11 +598,15 @@ Para reportar un problema, incluya:
 
 El pie de pagina de la aplicacion muestra los canales de contacto disponibles para la organizacion.
 
-Para cualquier inquietud sobre este manual o el funcionamiento de la plataforma, contacte a:
+Para asuntos institucionales o sobre el funcionamiento de la plataforma, contacte a los canales oficiales:
 
-- **Simon Torres Saldarriaga**
-- **Correo:** sitorress@unal.edu.co
-- **Celular:** 3127355474
+- **Proteccion:** proteccion@somosdefensores.org
+- **Sistemas:** responsablesistema@somosdefensores.org
+- **Comunicaciones:** comunicaciones@somosdefensores.org
+- **Direccion:** Transversal 26B # 40A-86, barrio La Soledad, Bogota D.C. - Colombia
+- **Telefonos:** (057 1) 2814010 - 2813048
+
+El software fue desarrollado de forma independiente por **Simon Torres Saldarriaga**. Su contacto tecnico es `sitorress@unal.edu.co`; no hace parte de Somos Defensores.
 
 ## 11. Glosario
 
@@ -568,7 +617,32 @@ Para cualquier inquietud sobre este manual o el funcionamiento de la plataforma,
 - **Rol:** conjunto de permisos asignados a una cuenta.
 - **CSV:** archivo de texto que permite exportar registros tabulares.
 - **Finalizacion:** registro de la respuesta de cierre que cambia el caso a `finalizado`.
+- **FeatureCollection:** formato GeoJSON que agrupa entidades geograficas como departamentos o municipios.
+- **PostGIS:** extension espacial de PostgreSQL utilizada para almacenar y consultar las geometrias de Colombia.
+- **Visor geografico:** pantalla publica que representa departamentos y municipios, permite seleccionar territorios y prepara descargas.
 
 ## 12. Control de cambios del manual
 
-Actualice este documento cuando se agregue o retire un formulario, cambien los estados, se modifiquen los roles o cambien las rutas publicas y administrativas. Las capturas deben renovarse cuando la interfaz cambie de forma visible.
+Actualice este documento cuando se agregue o retire un formulario, cambien los estados, se modifiquen los roles, cambien las rutas publicas y administrativas o se habiliten reportes oficiales. Las capturas deben renovarse cuando la interfaz cambie de forma visible.
+
+## 13. Rutas publicas de mapas para administracion tecnica
+
+Estas rutas no requieren autenticacion y devuelven una respuesta `FeatureCollection` en formato GeoJSON:
+
+```text
+GET /api/publico/mapas/departamentos
+GET /api/publico/mapas/municipios
+GET /api/publico/mapas/departamentos/{departamento}/municipios
+```
+
+La primera devuelve los departamentos, la segunda devuelve todos los municipios y la tercera filtra los municipios por el nombre o identificador almacenado del departamento.
+
+Las geometrias se importan desde `backend/storage/app/private/colombia-geojson.json`. Aunque el archivo tiene extension `.json`, su contenido es TopoJSON y contiene las capas `depts` y `mpios`. Las migraciones PostGIS crean las tablas `departamentos_geometrias` y `municipios_geometrias`, con SRID 4326 e indices espaciales GIST.
+
+Para preparar una base local con las geometrias, ejecute desde `backend`:
+
+```bash
+php artisan migrate
+```
+
+La base de datos debe ser PostgreSQL con la extension PostGIS habilitada. No exponga el archivo privado ni modifique sus datos directamente en produccion sin un respaldo y una migracion controlada.

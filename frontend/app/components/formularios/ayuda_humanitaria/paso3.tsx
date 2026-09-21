@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Agresion } from "@/types/formularios/proteccion-individual.types";
-import { DEPARTAMENTOS_COLOMBIA, MUNICIPIOS_POR_DEPARTAMENTO } from "@/lib/data/colombia";
-import { Plus, Trash2 } from "lucide-react";
+import { useCatalogo, useMunicipiosCatalogo } from "@/hooks/use-catalogo";
+import { modalidadesAgresion, presuntosResponsables } from "@/lib/data/agresiones";
+import { HelpCircle, Plus, Trash2 } from "lucide-react";
 import CampoSelect from "@/app/components/formularios/shared/campo-select";
 import CampoTexto from "@/app/components/formularios/shared/campo-texto";
 import CampoTextarea from "@/app/components/formularios/shared/campo-textarea";
@@ -20,6 +22,11 @@ export default function PasoInformacionCaso({
   onVolver,
   onSiguiente,
 }: PasoCasoProps) {
+  const [ayudaAbierta, setAyudaAbierta] = useState<number | null>(null);
+  const [ayudaResponsableAbierta, setAyudaResponsableAbierta] = useState<number | null>(null);
+  const departamentos = useCatalogo("departamentos");
+  const municipios = useMunicipiosCatalogo();
+  const modalidades = useCatalogo("modalidades-agresion");
   const agregarAgresion = () => {
     onAgresionesChange([
       ...agresiones,
@@ -33,6 +40,7 @@ export default function PasoInformacionCaso({
         descripcion: "",
         motivos: "",
         presunto_responsable: "",
+        presunto_responsable_descripcion: "",
       },
     ]);
   };
@@ -72,7 +80,7 @@ export default function PasoInformacionCaso({
 
           {agresiones.map((agresion, indice) => {
             const prefijo = `agresiones.${indice}`;
-            const municipios = (MUNICIPIOS_POR_DEPARTAMENTO[agresion.departamento] ?? []).map((municipio) => ({ value: municipio, label: municipio }));
+            const municipiosDisponibles = municipios.opciones.filter((municipio) => municipio.departamento_id === agresion.departamento).map((municipio) => ({ value: municipio.id, label: municipio.nombre }));
 
             return (
               <section key={indice} className="rounded-lg border border-gray-200 bg-white p-5">
@@ -93,17 +101,89 @@ export default function PasoInformacionCaso({
                   <fieldset className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <legend className="px-2 text-sm font-bold text-[#8e2329]">Lugar de la agresión *</legend>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <CampoSelect label="Departamento" value={agresion.departamento} onChange={(valor) => actualizarAgresion(indice, "departamento", valor)} opciones={DEPARTAMENTOS_COLOMBIA.map((departamento) => ({ value: departamento, label: departamento }))} required error={errores[`${prefijo}.departamento`]} />
-                      <CampoSelect label="Municipio" value={agresion.municipio} onChange={(valor) => actualizarAgresion(indice, "municipio", valor)} opciones={municipios} required error={errores[`${prefijo}.municipio`]} />
+                      <CampoSelect label="Departamento" value={agresion.departamento} onChange={(valor) => actualizarAgresion(indice, "departamento", valor)} opciones={departamentos.opciones.map((item) => ({ value: item.id, label: item.nombre }))} required error={errores[`${prefijo}.departamento`]} />
+                      <CampoSelect label="Municipio" value={agresion.municipio} onChange={(valor) => actualizarAgresion(indice, "municipio", valor)} opciones={municipiosDisponibles} required error={errores[`${prefijo}.municipio`]} />
                       <CampoTexto label="Vereda y/o comunidad" value={agresion.vereda_comunidad} onChange={(valor) => actualizarAgresion(indice, "vereda_comunidad", valor)} placeholder="Nombre de la vereda o comunidad" />
-                      <CampoTexto label="Consejo comunitario o resguardo" value={agresion.resguardo} onChange={(valor) => actualizarAgresion(indice, "resguardo", valor)} placeholder="Si aplica" />
+                      <CampoTexto label="Consejo comunitario/ resguardo o comunidad indigena." value={agresion.resguardo} onChange={(valor) => actualizarAgresion(indice, "resguardo", valor)} placeholder="Si aplica" />
                     </div>
                   </fieldset>
 
-                  <CampoTexto label="Modalidad de agresión que motiva la solicitud" value={agresion.modalidad} onChange={(valor) => actualizarAgresion(indice, "modalidad", valor)} placeholder="Indique la modalidad de agresión" required error={errores[`${prefijo}.modalidad`]} />
+                  <div>
+                    <div className="mb-2 flex items-center gap-2">
+                      <label htmlFor={`modalidad-${indice}`} className="text-sm font-semibold text-gray-700">
+                        Modalidad de agresión que motiva la solicitud
+                        <span className="ml-1 text-[#8e2329]">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setAyudaAbierta(ayudaAbierta === indice ? null : indice)}
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[#8e2329] transition hover:bg-[#8e2329]/10"
+                        aria-label="Explicar las modalidades de agresión"
+                        aria-expanded={ayudaAbierta === indice}
+                        title="¿Qué significa cada modalidad?"
+                      >
+                        <HelpCircle size={17} aria-hidden="true" />
+                      </button>
+                    </div>
+                    <select
+                      id={`modalidad-${indice}`}
+                      value={modalidades.opciones.some((opcion) => opcion.id === agresion.modalidad) ? agresion.modalidad : agresion.modalidad ? "OTRA" : ""}
+                      onChange={(event) => actualizarAgresion(indice, "modalidad", event.target.value === "OTRA" ? "Otra" : event.target.value)}
+                      className={`w-full rounded-lg border bg-white px-4 py-3 text-sm text-black outline-none focus:border-[#8e2329] focus:ring-2 focus:ring-[#8e2329]/20 ${errores[`${prefijo}.modalidad`] ? "border-red-500" : "border-gray-300"}`}
+                    >
+                      <option value="">Seleccione una modalidad</option>
+                      {modalidades.opciones.map((opcion) => <option key={opcion.id} value={opcion.id}>{opcion.nombre}</option>)}
+                      <option value="OTRA">Otra</option>
+                    </select>
+                    {agresion.modalidad === "Otra" || (agresion.modalidad !== "" && !modalidades.opciones.some((opcion) => opcion.id === agresion.modalidad)) ? (
+                      <CampoTexto label="Describa otra modalidad" value={agresion.modalidad === "Otra" ? "" : agresion.modalidad} onChange={(valor) => actualizarAgresion(indice, "modalidad", valor)} placeholder="Escriba la modalidad" required error={errores[`${prefijo}.modalidad`]} />
+                    ) : errores[`${prefijo}.modalidad`] ? <p className="mt-1 text-xs text-red-600">{errores[`${prefijo}.modalidad`]}</p> : null}
+                    {ayudaAbierta === indice && <div className="mt-3 space-y-2 rounded-lg border border-[#8e2329]/20 bg-[#fff8f8] p-4 text-xs leading-5 text-gray-700"><p className="font-semibold text-[#8e2329]">Definiciones de modalidades</p>{modalidadesAgresion.map((opcion) => <p key={opcion.value}><strong>{opcion.label}:</strong> {opcion.descripcion}</p>)}</div>}
+                  </div>
                   <CampoTextarea label="Descripción de la agresión" value={agresion.descripcion} onChange={(valor) => actualizarAgresion(indice, "descripcion", valor)} placeholder="Describa lo ocurrido." required filas={5} error={errores[`${prefijo}.descripcion`]} />
                   <CampoTextarea label="Motivos de la agresión" value={agresion.motivos} onChange={(valor) => actualizarAgresion(indice, "motivos", valor)} placeholder="Describa los motivos de la agresión." required filas={4} error={errores[`${prefijo}.motivos`]} />
-                  <CampoTextarea label="Presunto responsable" value={agresion.presunto_responsable} onChange={(valor) => actualizarAgresion(indice, "presunto_responsable", valor)} placeholder="Indique el presunto responsable, si es seguro proporcionar esta información." required filas={4} error={errores[`${prefijo}.presunto_responsable`]} />
+
+                  <div>
+                    <div className="mb-2 flex items-center gap-2">
+                      <label htmlFor={`presunto-responsable-${indice}`} className="text-sm font-semibold text-gray-700">
+                        Presunto responsable
+                        <span className="ml-1 text-[#8e2329]">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setAyudaResponsableAbierta(ayudaResponsableAbierta === indice ? null : indice)}
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[#8e2329] transition hover:bg-[#8e2329]/10"
+                        aria-label="Explicar los presuntos responsables"
+                        aria-expanded={ayudaResponsableAbierta === indice}
+                        title="¿Qué significa cada presunto responsable?"
+                      >
+                        <HelpCircle size={17} aria-hidden="true" />
+                      </button>
+                    </div>
+                    <select
+                      id={`presunto-responsable-${indice}`}
+                      value={presuntosResponsables.some((opcion) => opcion.value === agresion.presunto_responsable) ? agresion.presunto_responsable : agresion.presunto_responsable ? "OTRO" : ""}
+                      onChange={(event) => actualizarAgresion(indice, "presunto_responsable", event.target.value === "OTRO" ? "Otro" : event.target.value)}
+                      className={`w-full rounded-lg border bg-white px-4 py-3 text-sm text-black outline-none focus:border-[#8e2329] focus:ring-2 focus:ring-[#8e2329]/20 ${errores[`${prefijo}.presunto_responsable`] ? "border-red-500" : "border-gray-300"}`}
+                    >
+                      <option value="">Seleccione un presunto responsable</option>
+                      {presuntosResponsables.map((opcion) => <option key={opcion.value} value={opcion.value}>{opcion.label}</option>)}
+                      <option value="OTRO">Otro</option>
+                    </select>
+                    {agresion.presunto_responsable === "Otro" || (agresion.presunto_responsable !== "" && !presuntosResponsables.some((opcion) => opcion.value === agresion.presunto_responsable)) ? (
+                      <CampoTexto label="Especifique el presunto responsable" value={agresion.presunto_responsable === "Otro" ? "" : agresion.presunto_responsable} onChange={(valor) => actualizarAgresion(indice, "presunto_responsable", valor)} placeholder="Escriba el presunto responsable" required error={errores[`${prefijo}.presunto_responsable`]} />
+                    ) : errores[`${prefijo}.presunto_responsable`] ? <p className="mt-1 text-xs text-red-600">{errores[`${prefijo}.presunto_responsable`]}</p> : null}
+                    {ayudaResponsableAbierta === indice && <div className="mt-3 space-y-2 rounded-lg border border-[#8e2329]/20 bg-[#fff8f8] p-4 text-xs leading-5 text-gray-700"><p className="font-semibold text-[#8e2329]">Definiciones de presuntos responsables</p>{presuntosResponsables.map((opcion) => <p key={opcion.value}><strong>{opcion.label}:</strong> {opcion.descripcion}</p>)}</div>}
+                    <div className="mt-4">
+                      <CampoTextarea
+                        label={`Descripción del presunto responsable${presuntosResponsables.find((opcion) => opcion.value === agresion.presunto_responsable) ? ` (${presuntosResponsables.find((opcion) => opcion.value === agresion.presunto_responsable)?.label})` : ""}`}
+                        value={agresion.presunto_responsable_descripcion}
+                        onChange={(valor) => actualizarAgresion(indice, "presunto_responsable_descripcion", valor)}
+                        placeholder="Amplíe la información sobre el presunto responsable identificado, si es seguro proporcionarla."
+                        filas={3}
+                      />
+                    </div>
+                  </div>
                 </div>
               </section>
             );

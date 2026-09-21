@@ -35,6 +35,8 @@
         .conversacion .respuesta-revisor { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #d1d5db; }
 
         .vacio { color: #9ca3af; font-style: italic; }
+        .mapa { text-align: center; }
+        .mapa img { max-width: 100%; max-height: 320px; border: 1px solid #e5e7eb; }
         .footer { position: fixed; bottom: 12px; left: 24px; right: 24px; text-align: center; font-size: 8px; color: #9ca3af; border-top: 1px solid #e5e7eb; padding-top: 4px; }
     </style>
 </head>
@@ -75,6 +77,13 @@
                 </div>
             </div>
         @endforeach
+
+        @if($imagenMapa)
+            <div class="seccion">
+                <h2>Ubicación en el mapa</h2>
+                <div class="mapa"><img src="{{ $imagenMapa }}" alt="Mapa de ubicación del caso"></div>
+            </div>
+        @endif
 
         <div class="seccion">
             <h2>Documentos adjuntos</h2>

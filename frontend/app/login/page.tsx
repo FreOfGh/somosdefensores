@@ -26,5 +26,45 @@ export default function LoginPage() {
     finally { setEnviando(false); }
   };
 
-  return <main className="flex min-h-screen items-center justify-center bg-[#f5f5f5] px-4"><form onSubmit={iniciarSesion} className="w-full max-w-md border border-gray-300 bg-white p-7 shadow-sm"><h1 className="text-2xl font-bold text-black">Iniciar sesión</h1><p className="mt-2 text-sm text-black">Acceso exclusivo para usuarios con rol revisor.</p>{mensaje && <p className="mt-5 border-l-4 border-red-700 bg-red-50 p-3 text-sm text-black">{mensaje}</p>}<label className="mt-6 block text-sm font-semibold text-black">Correo electrónico<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required className="mt-2 w-full border border-gray-400 px-3 py-2.5 text-black outline-none focus:border-[#8e2329]" /></label><label className="mt-5 block text-sm font-semibold text-black">Contraseña<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required className="mt-2 w-full border border-gray-400 px-3 py-2.5 text-black outline-none focus:border-[#8e2329]" /></label><button type="submit" disabled={enviando} className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-[#8e2329] px-4 py-3 font-semibold text-white disabled:opacity-60"><LogIn className="h-4 w-4" />{enviando ? "Ingresando..." : "Ingresar"}</button></form></main>;
+  return (
+    <main className="flex min-h-[calc(100vh-76px)] items-center justify-center bg-[#f5f5f5] px-4 py-12">
+      <div className="w-full max-w-md overflow-hidden rounded-xl border border-gray-200 bg-[#fefbfb] shadow-sm">
+        <div className="bg-[#8e2329] px-6 py-4 text-white">
+          <h1 className="text-xl font-bold">Iniciar sesión</h1>
+          <p className="mt-1 text-sm text-white/90">Acceso para usuarios autorizados y superusuario.</p>
+        </div>
+        <form onSubmit={iniciarSesion} className="space-y-5 px-6 py-6">
+          {mensaje && <p className="border-l-4 border-red-700 bg-red-50 p-3 text-sm text-black">{mensaje}</p>}
+          <label className="block text-sm font-semibold text-gray-700">
+            Correo electrónico
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-black outline-none focus:border-[#8e2329] focus:ring-2 focus:ring-[#8e2329]/20"
+            />
+          </label>
+          <label className="block text-sm font-semibold text-gray-700">
+            Contraseña
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-black outline-none focus:border-[#8e2329] focus:ring-2 focus:ring-[#8e2329]/20"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={enviando}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8e2329] px-4 py-3 font-semibold text-white transition-colors hover:bg-[#a82d35] disabled:opacity-60"
+          >
+            <LogIn className="h-4 w-4" />
+            {enviando ? "Ingresando..." : "Ingresar"}
+          </button>
+        </form>
+      </div>
+    </main>
+  );
 }

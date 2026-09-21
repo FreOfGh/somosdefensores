@@ -2,10 +2,14 @@
 
 import { ArrowLeft, Check, CheckCircle2, ClipboardCopy, Download, ExternalLink, FileArchive, FileText, RefreshCw, Save, Send, Upload, X } from "lucide-react";
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
+import html2canvas from "html2canvas";
 import { adminFetch } from "@/lib/api/admin-fetch";
 import { PARENTESCOS } from "@/lib/data/colombia";
+import { presuntosResponsables } from "@/lib/data/agresiones";
+import { useCatalogo, useMunicipiosCatalogo } from "@/hooks/use-catalogo";
+import MapaCaso from "@/app/components/geografia/mapa-caso";
 
 type TipoCaso = "humanitaria" | "pasantia" | "proteccion_colectiva";
 type Documento = { id: string; nombre: string; url: string; url_descarga?: string };
@@ -78,8 +82,21 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
   const [enlaceCopiado, setEnlaceCopiado] = useState(false);
   const [enlaceSeguimientoCopiado, setEnlaceSeguimientoCopiado] = useState(false);
   const [exportandoPdf, setExportandoPdf] = useState(false);
+  const mapaRef = useRef<HTMLDivElement>(null);
   const tipoCaso = tipoApi(tipo);
   const listado = tipo === "humanitaria" ? "/admin/ayuda_humanitaria" : tipo === "pasantia" ? "/admin/pasantias" : "/admin/proteccion_colectiva";
+
+  const departamentosCatalogo = useCatalogo("departamentos");
+  const municipiosCatalogo = useMunicipiosCatalogo();
+  const tiposDocumentoCatalogo = useCatalogo("tipos-documento");
+  const generosCatalogo = useCatalogo("generos");
+  const gruposPoblacionalesCatalogo = useCatalogo("grupos-poblacionales");
+  const tiposLiderazgoCatalogo = useCatalogo("tipos-liderazgo");
+  const modalidadesAgresionCatalogo = useCatalogo("modalidades-agresion");
+  const estadosCivilesCatalogo = useCatalogo("estados-civiles");
+  const tiposPasantiaCatalogo = useCatalogo("tipos-pasantia");
+  const tiposRepresentanteCatalogo = useCatalogo("tipos-representante");
+  const respuestasBinariasCatalogo = useCatalogo("respuestas-binarias");
 
   const cargar = async () => {
     try {
@@ -193,7 +210,18 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
     try {
       setExportandoPdf(true);
       setMensaje("");
-      const respuesta = await adminFetch(`/api/revision/casos/${tipoCaso}/${id}/pdf${conConversaciones ? "?conversaciones=1" : ""}`);
+      let imagenMapa: string | undefined;
+      if (mapaRef.current) {
+        try {
+          const canvas = await html2canvas(mapaRef.current, { backgroundColor: "#ffffff", scale: 2 });
+          imagenMapa = canvas.toDataURL("image/png");
+        } catch { /* si falla la captura del mapa, el PDF se genera sin la imagen */ }
+      }
+      const respuesta = await adminFetch(`/api/revision/casos/${tipoCaso}/${id}/pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversaciones: conConversaciones, imagen_mapa: imagenMapa }),
+      });
       if (!respuesta.ok) {
         const datos = await respuesta.json().catch(() => null);
         throw new Error(datos?.message || "No fue posible generar el PDF.");
@@ -278,6 +306,44 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
   const campos = Object.entries(caso).filter(([campo]) => !noEditables.has(campo));
   const nombreCompleto = [caso.nombre_victima, caso.apellido_victima].filter(Boolean).map(String).join(" ").trim();
 
+  const mapaIdANombre = new Map(departamentosCatalogo.opciones.map((departamento) => [departamento.id, departamento.nombre]));
+  const resolverDepartamento = (valor: unknown): string | null => {
+    if (typeof valor !== "string" || !valor) return null;
+    return mapaIdANombre.get(valor) ?? valor;
+  };
+  const agresionesCaso = Array.isArray(caso.agresiones) ? (caso.agresiones as Record<string, unknown>[]) : [];
+  const departamentosCaso = Array.from(new Set([
+    resolverDepartamento(caso.procedencia_departamento),
+    resolverDepartamento(caso.residencia_departamento),
+    resolverDepartamento(caso.departamento),
+    ...agresionesCaso.map((agresion) => resolverDepartamento(agresion.departamento)),
+  ].filter((valor): valor is string => Boolean(valor))));
+
+  // Campos enlazados a catálogos: se muestran como desplegable en lugar del UUID crudo.
+  const catalogosPorCampo: Record<string, { id: string; nombre: string }[]> = {
+    tipo_documento: tiposDocumentoCatalogo.opciones,
+    genero: generosCatalogo.opciones,
+    grupo_etnico: gruposPoblacionalesCatalogo.opciones,
+    tiene_discapacidad: respuestasBinariasCatalogo.opciones,
+    tiene_condicion_salud: respuestasBinariasCatalogo.opciones,
+    tiene_hijos: respuestasBinariasCatalogo.opciones,
+    tiene_personeria_juridica: respuestasBinariasCatalogo.opciones,
+    tipo_liderazgo: tiposLiderazgoCatalogo.opciones,
+    estado_civil: estadosCivilesCatalogo.opciones,
+    tipo_pasantia: tiposPasantiaCatalogo.opciones,
+    representante_tipo: tiposRepresentanteCatalogo.opciones,
+    procedencia_departamento: departamentosCatalogo.opciones,
+    residencia_departamento: departamentosCatalogo.opciones,
+    departamento: departamentosCatalogo.opciones,
+  };
+  const municipiosDeDepartamento = (departamentoId: unknown) =>
+    municipiosCatalogo.opciones.filter((municipio) => municipio.departamento_id === departamentoId).map((municipio) => ({ id: municipio.id, nombre: municipio.nombre }));
+  const catalogosMunicipioPorCampo: Record<string, { id: string; nombre: string }[]> = {
+    procedencia_municipio: municipiosDeDepartamento(caso.procedencia_departamento),
+    residencia_municipio: municipiosDeDepartamento(caso.residencia_departamento),
+    municipio: municipiosDeDepartamento(caso.departamento),
+  };
+
   const secciones = seccionesFormulario
     .map((seccion) => ({
       titulo: seccion.titulo,
@@ -335,10 +401,17 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
       const lista = Array.isArray(dato) ? (dato as Record<string, string>[]) : [];
       const bloqueado = esFinal;
       const actualizarAgresion = (indice: number, campoAgresion: string, valor: string) => {
-        setCaso({ ...caso, agresiones: lista.map((agresion, posicion) => (posicion === indice ? { ...agresion, [campoAgresion]: valor } : agresion)) });
+        setCaso({
+          ...caso,
+          agresiones: lista.map((agresion, posicion) => (
+            posicion === indice
+              ? { ...agresion, [campoAgresion]: valor, ...(campoAgresion === "departamento" ? { municipio: "" } : {}) }
+              : agresion
+          )),
+        });
       };
       const eliminarAgresion = (indice: number) => setCaso({ ...caso, agresiones: lista.filter((_, posicion) => posicion !== indice) });
-      const agregarAgresion = () => setCaso({ ...caso, agresiones: [...lista, { fecha_ocurrencia: "", departamento: "", municipio: "", vereda_comunidad: "", resguardo: "", modalidad: "", descripcion: "", motivos: "", presunto_responsable: "" }] });
+      const agregarAgresion = () => setCaso({ ...caso, agresiones: [...lista, { fecha_ocurrencia: "", departamento: "", municipio: "", vereda_comunidad: "", resguardo: "", modalidad: "", descripcion: "", motivos: "", presunto_responsable: "", presunto_responsable_descripcion: "" }] });
       const camposAgresion: { campo: string; etiqueta: string; largo?: boolean; tipo?: string }[] = [
         { campo: "fecha_ocurrencia", etiqueta: "Fecha de ocurrencia", tipo: "date" },
         { campo: "departamento", etiqueta: "Departamento" },
@@ -349,6 +422,7 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
         { campo: "descripcion", etiqueta: "Descripción", largo: true },
         { campo: "motivos", etiqueta: "Motivos", largo: true },
         { campo: "presunto_responsable", etiqueta: "Presunto responsable", largo: true },
+        { campo: "presunto_responsable_descripcion", etiqueta: "Descripción del presunto responsable", largo: true },
       ];
       return (
         <div key={campo} className="text-sm font-semibold text-black md:col-span-2">
@@ -366,16 +440,40 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
                   )}
                 </div>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  {camposAgresion.map(({ campo: campoAgresion, etiqueta, largo, tipo }) => (
-                    <label key={campoAgresion} className={`block text-xs font-semibold text-black ${largo ? "md:col-span-2" : ""}`}>
-                      {etiqueta}
-                      {largo ? (
-                        <textarea value={agresion[campoAgresion] ?? ""} onChange={(event) => actualizarAgresion(indice, campoAgresion, event.target.value)} rows={3} disabled={bloqueado} className={claseInput} />
-                      ) : (
-                        <input type={tipo ?? "text"} value={agresion[campoAgresion] ?? ""} onChange={(event) => actualizarAgresion(indice, campoAgresion, event.target.value)} disabled={bloqueado} className={claseInput} />
-                      )}
-                    </label>
-                  ))}
+                  {camposAgresion.map(({ campo: campoAgresion, etiqueta, largo, tipo }) => {
+                    const valorActual = agresion[campoAgresion] ?? "";
+                    const opcionesSelect = campoAgresion === "departamento"
+                      ? departamentosCatalogo.opciones
+                      : campoAgresion === "municipio"
+                        ? municipiosDeDepartamento(agresion.departamento)
+                        : campoAgresion === "modalidad"
+                          ? modalidadesAgresionCatalogo.opciones
+                          : campoAgresion === "presunto_responsable"
+                            ? presuntosResponsables.map((opcion) => ({ id: opcion.value, nombre: opcion.label }))
+                            : null;
+
+                    return (
+                      <label key={campoAgresion} className={`block text-xs font-semibold text-black ${largo ? "md:col-span-2" : ""}`}>
+                        {etiqueta}
+                        {opcionesSelect ? (
+                          <select
+                            value={opcionesSelect.some((opcion) => opcion.id === valorActual) ? valorActual : ""}
+                            onChange={(event) => actualizarAgresion(indice, campoAgresion, event.target.value)}
+                            disabled={bloqueado}
+                            className={claseInput}
+                          >
+                            <option value="">Sin registrar</option>
+                            {opcionesSelect.map((opcion) => <option key={opcion.id} value={opcion.id}>{opcion.nombre}</option>)}
+                            {!opcionesSelect.some((opcion) => opcion.id === valorActual) && valorActual && <option value={valorActual}>{valorActual} (valor libre)</option>}
+                          </select>
+                        ) : largo ? (
+                          <textarea value={valorActual} onChange={(event) => actualizarAgresion(indice, campoAgresion, event.target.value)} rows={3} disabled={bloqueado} className={claseInput} />
+                        ) : (
+                          <input type={tipo ?? "text"} value={valorActual} onChange={(event) => actualizarAgresion(indice, campoAgresion, event.target.value)} disabled={bloqueado} className={claseInput} />
+                        )}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -391,6 +489,26 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
 
     const largo = textoLargo.has(campo);
     const campoBloqueado = campo === "seguimiento" ? caso.estado === "finalizado" : esFinal;
+
+    const opcionesCatalogo = catalogosPorCampo[campo] ?? catalogosMunicipioPorCampo[campo];
+    if (opcionesCatalogo) {
+      const valorActual = typeof dato === "string" ? dato : "";
+      return (
+        <label key={campo} className="block text-sm font-semibold text-black">
+          {mostrarNombre(campo)}
+          <select
+            value={opcionesCatalogo.some((opcion) => opcion.id === valorActual) ? valorActual : ""}
+            onChange={(event) => setCaso({ ...caso, [campo]: event.target.value, ...(campo === "procedencia_departamento" ? { procedencia_municipio: "" } : {}), ...(campo === "residencia_departamento" ? { residencia_municipio: "" } : {}), ...(campo === "departamento" ? { municipio: "" } : {}) })}
+            disabled={campoBloqueado}
+            className={claseInput}
+          >
+            <option value="">Sin registrar</option>
+            {opcionesCatalogo.map((opcion) => <option key={opcion.id} value={opcion.id}>{opcion.nombre}</option>)}
+          </select>
+        </label>
+      );
+    }
+
     return (
       <label key={campo} className={`block text-sm font-semibold text-black ${largo ? "md:col-span-2" : ""}`}>
         {mostrarNombre(campo)}
@@ -428,6 +546,10 @@ export default function GestionarCasoIndividual({ tipo }: { tipo: TipoCaso }) {
         <button type="button" onClick={() => void exportarPdf(true)} disabled={exportandoPdf} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 disabled:opacity-60">
           <FileText className="h-4 w-4" />{exportandoPdf ? "Generando..." : "Exportar PDF con conversaciones"}
         </button>
+      </div>
+      {/* Mapa fuera de pantalla: se captura como imagen para incrustarse en el PDF exportado. */}
+      <div className="pointer-events-none absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
+        <div className="w-[900px]"><MapaCaso ref={mapaRef} departamentosResaltados={departamentosCaso} /></div>
       </div>
       {hayAcciones && <div className="flex flex-wrap items-center gap-2 border-t border-gray-100 bg-gray-50 px-6 py-4">
         {caso.estado === "pendiente de revisión" && <button type="button" onClick={() => void iniciar()} className="inline-flex items-center gap-2 rounded-lg bg-[#92212a] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#701b20]"><Send className="h-4 w-4" />Iniciar validación</button>}

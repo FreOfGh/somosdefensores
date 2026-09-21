@@ -1,9 +1,6 @@
-import {
-  DEPARTAMENTOS_COLOMBIA,
-  MUNICIPIOS_POR_DEPARTAMENTO,
-} from "@/lib/data/colombia";
 import CampoSelect from "@/app/components/formularios/shared/campo-select";
 import CampoTexto from "@/app/components/formularios/shared/campo-texto";
+import { useUbicaciones } from "@/hooks/use-catalogo";
 
 type SufijoUbicacion =
   | "departamento"
@@ -24,11 +21,6 @@ interface CamposUbicacionProps {
   required?: boolean;
 }
 
-const opcionesDepartamentos = DEPARTAMENTOS_COLOMBIA.map((departamento) => ({
-  value: departamento,
-  label: departamento,
-}));
-
 export default function CamposUbicacion({
   titulo,
   prefijo,
@@ -42,9 +34,9 @@ export default function CamposUbicacion({
   const campoVereda = `${prefijo}_vereda_comunidad` as CampoUbicacion;
   const campoResguardo = `${prefijo}_resguardo` as CampoUbicacion;
 
-  const opcionesMunicipios = (
-    MUNICIPIOS_POR_DEPARTAMENTO[valores[campoDepartamento]] ?? []
-  ).map((municipio) => ({ value: municipio, label: municipio }));
+  const { departamentos, municipios } = useUbicaciones(valores[campoDepartamento]);
+  const opcionesDepartamentos = departamentos.opciones.map((item) => ({ value: item.id, label: item.nombre }));
+  const opcionesMunicipios = municipios.opciones.map((item) => ({ value: item.id, label: item.nombre }));
 
   return (
     <fieldset className="rounded-xl border border-gray-200 bg-white p-5">
@@ -94,7 +86,7 @@ export default function CamposUbicacion({
           />
 
           <CampoTexto
-            label="Consejo comunitario  o consejo comunitario / resguardo o comunidad indigena."
+            label="Consejo comunitario/ resguardo o comunidad indigena."
             value={valores[campoResguardo]}
             onChange={(v) => onCampoChange(campoResguardo, v)}
             placeholder="Nombre del consejo comunitario  (si aplica)"
